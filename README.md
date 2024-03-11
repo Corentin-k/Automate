@@ -6,9 +6,16 @@
 ## Informations
 - Projet réalisé dans le cadre de l'UE "Automates et expressions relationnelles" au semestre 4 de la L2 à L'EFREI Paris.
 - Le projet est réalisé en Python
+<a href="https://www.python.org/" target="_blank"><img style="margin: 10px" src="https://profilinator.rishav.dev/skills-assets/python-original.svg" alt="Python" height="50" /></a>  
+
+- Les bibliothèques utilisées sont : 
+  - [Rich](https://rich.readthedocs.io/en/stable/index.html) pour une meilleure visualisation des automates
+  - [Os](https://python.readthedocs.io/en/stable/library/os.html#os.listdir) pour la gestion des fichiers
+
 
 - Le projet est sous licence MIT
-<a href="https://www.python.org/" target="_blank"><img style="margin: 10px" src="https://profilinator.rishav.dev/skills-assets/python-original.svg" alt="Python" height="50" /></a>  
+
+> **Note:** Le projet est en cours de développement et de nouvelles fonctionnalités seront ajoutées au fur et à mesure.
 
 ## Introduction
 Ce projet à pour but de gérer les automates finis. Il permet nottemment de dire si ceux xi sont déterministes, complets, reconnaissent un mot, sont équivalents, etc. 
@@ -39,5 +46,5 @@ Transition=    # Lister toutes les transitions
 4: a 3; b 2
 ```
 
-
-> **Note:** Le projet est en cours de développement et de nouvelles fonctionnalités seront ajoutées au fur et à mesure.
+## License
+Ce projet est sous licence MIT. Voir le fichier [LICENSE](

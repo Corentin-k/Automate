@@ -67,6 +67,7 @@ def definition(mot):
     return False
 
 
+
 def recherchemot():
     while True:
         print("\nQuel mot voulez-vous rechercher ?")
@@ -78,7 +79,7 @@ def recherchemot():
             print("\nVoulez-vous chercher un autre mot ? (o/n)")
             choix = input(">>> ").lower()
             if choix not in ["oui", "o", "yes", "y"]:
-                menu_automate("help")
+                menu()
                 break
 
 
