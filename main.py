@@ -1,53 +1,80 @@
-from rich import print  # pip install rich
-from rich.console import Console
-from rich.table import Table
-from rich.progress import Progress
 from rich.progress import track
-from rich.syntax import Syntax
+from test import *
 import time
-
+from rich.tree import Tree
 from test import *
 
-# Press the green button in the gutter to run the script.
+from Automate import *
+from Code import *
+import os
+
+
+# pyinstaller main.py
+
+
+# Press the green button in
+# the gutter to run the script.
+
+# https://python.readthedocs.io/en/stable/library/os.html#os.listdir
+
+def fichier():
+    dossier_programme = os.path.dirname(__file__) + "\\automates"
+    print(dossier_programme)
+    fichiers = []
+    tree = Tree("Fichier")
+    for fichier in track(os.listdir(dossier_programme), description="Recupération des fichiers..."):
+        if fichier.endswith(".txt") and fichier.startswith("automate"):
+            fichiers.append(fichier)
+            tree.add(fichier)
+            time.sleep(1)
+            os.system('cls' if os.name == 'nt' else 'clear')
+            print(tree)
+
+    print("\nQuel automate voulez vous chosir ?\n")
+    choix = int(input(">>>"))
+    if choix == 0:
+        return None
+    return dossier_programme + "\\" + fichiers[choix - 1]
+
+
+def menu():
+    print("Menu :")
+    print("1. voir le code d'une fonction afficher_code")
+    print("2. Accéder à la définition d'un mot")
+    print("3. Afficher l'aide")
+    print("4. Ouvrir un automate")
+    print("5. Afficher les_credits")
+    print("6. Quitter")
+
+    print("Choisissez une option :")
+    choix = input(">>>")
+
+    if choix == "1":
+        afficher_code()
+    elif choix == "2":
+        recherchemot()
+    elif choix == "3":
+        print_help()
+    elif choix == "5":
+        print_credit()
+
+    elif choix == "4":
+
+        automate=Automate(fichier())
+        automate.affichage_automate()
+        automate.completer()
+        automate.completer()
+    elif choix == "7":
+        print("Au revoir !")
+    else:
+        print("Option invalide.")
+
+
 if __name__ == '__main__':
-    recherchemot()
-    # menu_automate('crédits')
-    console = Console(color_system="windows")
-    console.print("[bold red]Texte en rouge[/bold red]")
-    console.print(console.color_system)
-    console.print("[green]Texte en vert[/green]")
+    # afficher_code()
+    # automate = Automate(fichier())
+    # automate.affichage_automate()
 
-    console.print("[bold]Texte en gras[/bold]")
-    console.print("[italic]Texte en italique[/italic]")
-    console.print("[underline]Texte souligné[/underline]")
-
-    console = Console()
-    console.print("Texte aligné à gauche", justify="left")
-    console.print("Texte aligné au centre", justify="center")
-    console.print("Texte aligné à droite", justify="right")
-
-    console = Console()
-    table = Table(title="Exemple de tableau")
-    table.add_column("Entré/Sortie", justify="left", style="cyan", no_wrap=True)
-    table.add_column("Etats", justify="right", style="magenta")
-    table.add_column("a", justify="right", style="magenta")
-    table.add_column("b", justify="right", style="magenta")
-    table.add_row("Sortie", " J'ai pas d'idéée", "a", "b")
-    table.add_row("Entrée", "JH'", "b", "a")
-    console.print(table)
-
-    for i in track(range(20), description="Processing..."):
-        time.sleep(1)  # Simulate work being done
-
-    code = "for i in range(10):\n    print(i)"
-    syntax = Syntax(code, "python", theme="monokai", line_numbers=True)
-    print(syntax)
-
-    from rich import print
-
-    print("[image]https://www.codedex.io/images/codedex-bot-logo.gif[/image]")
-
-    menu_automate("help")
     x = 0
     while True:
-        x += 1
+        menu()
