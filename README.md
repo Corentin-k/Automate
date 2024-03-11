@@ -28,6 +28,10 @@ Il faut également installer la bibliotheque rich pour une meilleure visualisati
 
 Voir toutes les fonctionnalités dans le wiki du projet [ici](https://github.com/Corentin-k/Automate/wiki)
 
+- Il permet de determiner un automate
+- Il dispose aussi d'un mini-dictionnaires du vocabulaire à connaitre pour le cours d'Automate
+- Il permet de gérer des automates depuis un fichier texte
+
 > :warning: Attention pour pouvoir lire les automates il faut les stocker comme suit dans un fichier.txt dans un repertoire "automates" à la racine du projet :
 
 ```txt
