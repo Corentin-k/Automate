@@ -15,7 +15,8 @@
 
 - Le projet est sous licence MIT
 
-> **Note:** Le projet est en cours de développement et de nouvelles fonctionnalités seront ajoutées au fur et à mesure.
+> [!NOTE]
+> Le projet est en cours de développement et de nouvelles fonctionnalités seront ajoutées au fur et à mesure.
 
 ## Introduction
 Ce projet à pour but de gérer les automates finis. Il permet nottemment de dire si ceux xi sont déterministes, complets, reconnaissent un mot, sont équivalents, etc. 
@@ -32,7 +33,8 @@ Voir toutes les fonctionnalités dans le wiki du projet [ici](https://github.com
 - Il dispose aussi d'un mini-dictionnaires du vocabulaire à connaitre pour le cours d'Automate
 - Il permet de gérer des automates depuis un fichier texte
 
-> :warning: Attention pour pouvoir lire les automates il faut les stocker comme suit dans un fichier.txt dans un repertoire "automates" à la racine du projet :
+> [!IMPORTANT]
+> Attention pour pouvoir lire les automates il faut les stocker comme suit dans un fichier.txt dans un repertoire "automates" à la racine du projet :
 
 ```txt
 # Exemple d'automate
