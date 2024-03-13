@@ -1,20 +1,16 @@
 from rich.progress import track
 from test import *
 import time
-from rich.tree import Tree
 from test import *
-
 from Automate import *
 from Code import *
 import os
 
 
+# Lancer la commande suivante pour générer l'exécutable
 # pyinstaller main.py
 
-
-# Press the green button in
-# the gutter to run the script.
-
+# Lien vers la documentation de la fonction os.listdir
 # https://python.readthedocs.io/en/stable/library/os.html#os.listdir
 
 def fichier():
@@ -30,7 +26,7 @@ def fichier():
             os.system('cls' if os.name == 'nt' else 'clear')
             print(tree)
 
-    print("\nQuel automate voulez vous chosir ?\n")
+    print("\nQuel automate voulez vous choisir ?\n")
     choix = int(input(">>>"))
     if choix == 0:
         return None
@@ -52,18 +48,21 @@ def menu():
     if choix == "1":
         afficher_code()
     elif choix == "2":
-        recherchemot()
+        rechercheMot()
     elif choix == "3":
         print_help()
     elif choix == "5":
         print_credit()
 
     elif choix == "4":
+        try:
+            automate = Automate(fichier())
+            automate.affichage_automate()
+            automate.completer()
+        except:
+            print("Erreur lors de l'ouverture de l'automate")
+            print("Verifier votre format d'automate")
 
-        automate=Automate(fichier())
-        automate.affichage_automate()
-        automate.completer()
-        automate.completer()
     elif choix == "7":
         print("Au revoir !")
     else:
@@ -75,6 +74,5 @@ if __name__ == '__main__':
     # automate = Automate(fichier())
     # automate.affichage_automate()
 
-    x = 0
     while True:
         menu()

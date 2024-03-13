@@ -2,10 +2,11 @@ from rich.console import Console
 from rich.table import Table
 
 
+# Lien vers la documentation de la fonction os.listdir
 # https://rich.readthedocs.io/en/stable/tree.html
 
 class Automate:
-    # Attribut
+    # Attributs
     complet = False
     standard = False
     deterministe = False
@@ -14,7 +15,11 @@ class Automate:
     def __init__(self, lien_fichier):
 
         with open(lien_fichier, "r") as Fichier:
+
             contenu = Fichier.readline().strip("Etat={}\n")  # recupere la premiere ligne et enleve le retour à la ligne
+            if contenu == "":
+                return
+
             etat = contenu.split(",")
             self.etat = etat
 
@@ -47,8 +52,10 @@ class Automate:
                     self.transition[etat][symbole] = destination
 
     def __str__(self):
-
-        return f"Etat: {self.etat}\nLangage: {self.langage}\nEntree : {self.entree},\nSortie : {self.sortie},\nTransition : {self.transition},\nComplet : {self.complet}, Standard : {self.standard}, Deterministe : {self.deterministe}, Minimal : {self.minimal}"
+        affichage = f"Etat: {self.etat}\nLangage: {self.langage}\nEntree : {self.entree},\nSortie : {self.sortie},"
+        affichage += f"\nTransition : {self.transition},\nComplet : {self.complet},"
+        affichage += f" Standard : {self.standard}, Deterministe : {self.deterministe}, Minimal : {self.minimal}"
+        return affichage
 
     def affichage_automate(self):
         console = Console(color_system="windows")
@@ -65,17 +72,18 @@ class Automate:
             for lettre in self.langage:
                 transition = self.transition.get(etat, {}).get(lettre, [])
                 transitions[lettre] = ','.join(transition) if transition else ""
+            # Type entre ou sortie
 
             if etat in self.entree:
                 if etat in self.sortie:
-                    type = "[green]E[/green]//[red]S[/red]"
+                    type_etat = "[green]E[/green]//[red]S[/red]"
                 else:
-                    type = "[green]E[/green]"
+                    type_etat = "[green]E[/green]"
             elif etat in self.sortie:
-                type = "[red]S[/red]"
+                type_etat = "[red]S[/red]"
             else:
-                type = ""
-            table.add_row(type, etat, *transitions.values())
+                type_etat = ""
+            table.add_row(type_etat, etat, *transitions.values())
 
         console.print(table)
 

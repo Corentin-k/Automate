@@ -1,6 +1,5 @@
 from rich import print  # pip install rich
 from rich.console import Console
-from rich.syntax import Syntax
 
 """
 Donner les def de chaque terme  : determination, standardisation, complémentaire, minimisation
@@ -12,6 +11,8 @@ Crédit
 Quitter
 
 """
+
+
 console = Console(color_system="auto")
 
 
@@ -29,9 +30,6 @@ def print_credit():
     console.print("[red]Ce projet a été réalisé par ....... [/red]")
     console.print("Dans le cadre du cours de Automates finis et expression relationnelles en L2 à l'Efrei")
     console.print("@2024")
-
-
-
 
 
 def definition(mot):
@@ -67,8 +65,7 @@ def definition(mot):
     return False
 
 
-
-def recherchemot():
+def rechercheMot():
     while True:
         print("\nQuel mot voulez-vous rechercher ?")
         mot_recherche = input(">>> ").lower()
@@ -79,8 +76,4 @@ def recherchemot():
             print("\nVoulez-vous chercher un autre mot ? (o/n)")
             choix = input(">>> ").lower()
             if choix not in ["oui", "o", "yes", "y"]:
-                menu()
-                break
-
-
-
+                return
