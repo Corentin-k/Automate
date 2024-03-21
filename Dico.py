@@ -1,38 +1,34 @@
+import inspect
 from rich import print  # pip install rich
-from rich.console import Console
+from rich.syntax import Syntax
+from rich.tree import Tree
+
+from Automate import *
+
+# Lien vers la documentation de la fonction inspect
+# https://docs.python.org/3/library/inspect.html#inspect.getsource
+
 
 """
-Donner les def de chaque terme  : determination, standardisation, complémentaire, minimisation
-Choisir l'automate à analyser
-    Dire ce que l'automate est
-    Demandé ce que l'utilisateur veut faire
-Help
-Crédit
-Quitter
+Fichier Dico.py
+Ce fichier contient des fonctions pour afficher le code d'une fonction de la classe Automate et pour rechercher un mot
+dans un dictionnaire.
 
+Fonctions :
+
+    - definition(mot) : donne la définition d'un mot
+    - recherche_mot() : permet de rechercher un mot dans un dictionnaire
+    - afficher_code() : affiche le code d'une fonction de la classe Automate
+    
 """
-
-
-console = Console(color_system="auto")
-
-
-def print_help():
-    console.print("Le programme permet d'analyser les automates")
-    console.print("Il peut analyser un automate pour déterminer s'il est [underline]déterministe[/underline], "
-                  "[underline]standardisé[/underline], [underline]complet[/underline] ou [underline]minimisé"
-                  "[/underline].")
-    console.print("Pour analyser un automate, placez-le dans un fichier .txt avec le format spécifié.")
-    console.print("Veillez à placer le fichier dans le même dossier que le programme Python ou à spécifier le chemin "
-                  "du fichier.")
-
-
-def print_credit():
-    console.print("[red]Ce projet a été réalisé par ....... [/red]")
-    console.print("Dans le cadre du cours de Automates finis et expression relationnelles en L2 à l'Efrei")
-    console.print("@2024")
 
 
 def definition(mot):
+    """Donne la définition d'un mot
+    :param mot: str
+    :return bool
+    """
+    console = Console(color_system="auto")
     definitions = {
         "minimal": {
             "synonymes": ["minimal", "minimiser", "minimale"],
@@ -65,7 +61,10 @@ def definition(mot):
     return False
 
 
-def rechercheMot():
+def recherche_mot():
+    """Permet de rechercher un mot dans un dictionnaire
+    :return None
+    """
     while True:
         print("\nQuel mot voulez-vous rechercher ?")
         mot_recherche = input(">>> ").lower()
@@ -77,3 +76,27 @@ def rechercheMot():
             choix = input(">>> ").lower()
             if choix not in ["oui", "o", "yes", "y"]:
                 return
+
+
+def afficher_code():
+    """Affiche le code d'une fonction de la classe Automate
+    :return:
+    """
+    tree = Tree("Automate")
+    for name, obj in inspect.getmembers(Automate):
+        if inspect.isfunction(obj):
+            tree.add(name)
+    print(tree)
+    print("Quelle fonction voulez-vous afficher ?")
+    fonction = input(">>> ")
+    try:
+        fonction = "Automate." + fonction
+        code = inspect.getsource(eval(fonction))
+        syntax = Syntax(code, "python", theme="ansi_dark", line_numbers=True)
+        print(syntax)
+    except AttributeError:
+        print("La fonction spécifiée n'existe pas dans Automate.")
+    except TypeError:
+        print("La fonction spécifiée n'est pas un objet que vous pouvez afficher.")
+    except Exception as e:
+        print(f"Une erreur s'est produite : {e}")

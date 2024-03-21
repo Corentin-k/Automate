@@ -1,11 +1,29 @@
 from rich.console import Console
 from rich.table import Table
 
-
 # Lien vers la documentation de la fonction os.listdir
 # https://rich.readthedocs.io/en/stable/tree.html
 
+
 class Automate:
+    """Classe Automate qui permet de créer un automate à partir d'un fichier texte
+    et de le manipuler
+
+    Use :
+        automate = Automate("fichier.txt")
+        automate.affichage_automate()
+
+    Attributs
+        etat : liste des états
+        langage : liste des lettres du langage
+        entree : liste des états d'entrée
+        sortie : liste des états de sortie
+        transition : dictionnaire des transitions
+        complet : booléen indiquant si l'automate est complet
+        standard : booléen indiquant si l'automate est standard
+        deterministe : booléen indiquant si l'automate est déterministe
+
+    """
     # Attributs
     complet = False
     standard = False
@@ -108,3 +126,24 @@ class Automate:
         self.complet = True
         self.etat.append("p")
         self.affichage_automate()
+
+    def est_standard(self):
+        for etat in self.etat:
+            if etat in self.entree and etat in self.sortie:
+                return False
+        return True
+
+    def standardiser(self):
+        pass
+
+    def est_deterministe(self):
+        pass
+
+    def determiniser(self):
+        pass
+
+    def minminiser(self):
+        pass
+
+    def est_minimal(self):
+        pass
