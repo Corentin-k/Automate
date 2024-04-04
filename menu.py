@@ -2,8 +2,8 @@ from rich.progress import track
 import time
 import os
 
-from Dico import *
-from Automate import *
+from dico import *
+from automate import *
 
 
 # Lien vers la documentation de la fonction os.listdir
@@ -37,7 +37,7 @@ def fichier():
         if fichier_.endswith(".txt") and fichier_.startswith("automate"):
             fichiers.append(fichier_)
             tree.add(fichier_)
-            time.sleep(1)
+            time.sleep(0)
             os.system('cls' if os.name == 'nt' else 'clear')
             print(tree)
 
@@ -45,6 +45,7 @@ def fichier():
     choix = int(input(">>>"))
     if choix == 0:
         return None
+    print(dossier_programme + "\\" + fichiers[choix - 1])
     return dossier_programme + "\\" + fichiers[choix - 1]
 
 
@@ -71,7 +72,9 @@ def menu():
 
     elif choix == "4":
         try:
+
             automate = Automate(fichier())
+
             automate.affichage_automate()
             automate.completer()
         except:

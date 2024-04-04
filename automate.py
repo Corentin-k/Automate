@@ -1,3 +1,5 @@
+from abc import ABC
+
 from rich.console import Console
 from rich.table import Table
 
@@ -5,7 +7,8 @@ from rich.table import Table
 # https://rich.readthedocs.io/en/stable/tree.html
 
 
-class Automate:
+from automate_interface import AutomateInterface
+class Automate(AutomateInterface, ABC):
     """Classe Automate qui permet de créer un automate à partir d'un fichier texte
     et de le manipuler
 
@@ -24,14 +27,20 @@ class Automate:
         deterministe : booléen indiquant si l'automate est déterministe
 
     """
-    # Attributs
-    complet = False
-    standard = False
-    deterministe = False
-    minimal = False
 
     def __init__(self, lien_fichier):
+        self.etat = []
+        self.langage = []
+        self.entree = []
+        self.sortie = []
+        self.transition = {}
+        self.complet = False
+        self.standard = False
+        self.deterministe = False
+        self.minimal = False
+        self._construire_automate(lien_fichier)
 
+    def _construire_automate(self, lien_fichier):  # Fonction privée indiquée par le _
         with open(lien_fichier, "r") as Fichier:
 
             contenu = Fichier.readline().strip("Etat={}\n")  # recupere la premiere ligne et enleve le retour à la ligne
@@ -142,7 +151,8 @@ class Automate:
     def determiniser(self):
         pass
 
-    def minminiser(self):
+    def minimiser(self):
+        """Minimise l'automate si nécessaire."""
         pass
 
     def est_minimal(self):

@@ -1,4 +1,4 @@
-from Menu import *
+from menu import *
 
 
 # Lancer la commande suivante pour générer l'exécutable
@@ -12,3 +12,7 @@ if __name__ == '__main__':
 
     while True:
         menu()
+
+
+
+
