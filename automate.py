@@ -8,6 +8,8 @@ from rich.table import Table
 
 
 from automate_interface import AutomateInterface
+
+
 class Automate(AutomateInterface, ABC):
     """Classe Automate qui permet de créer un automate à partir d'un fichier texte
     et de le manipuler
@@ -40,7 +42,7 @@ class Automate(AutomateInterface, ABC):
         self.minimal = False
         self._construire_automate(lien_fichier)
 
-    def _construire_automate(self, lien_fichier):  # Fonction privée indiquée par le _
+    def _construire_automate(self, lien_fichier) :  # Fonction privée indiquée par le _
         with open(lien_fichier, "r") as Fichier:
 
             contenu = Fichier.readline().strip("Etat={}\n")  # recupere la premiere ligne et enleve le retour à la ligne
