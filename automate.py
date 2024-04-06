@@ -1,5 +1,4 @@
 from abc import ABC
-
 from rich.console import Console
 from rich.table import Table
 
@@ -42,7 +41,7 @@ class Automate(AutomateInterface, ABC):
         self.minimal = False
         self._construire_automate(lien_fichier)
 
-    def _construire_automate(self, lien_fichier) :  # Fonction privée indiquée par le _
+    def _construire_automate(self, lien_fichier):  # Fonction privée indiquée par le _
         with open(lien_fichier, "r") as Fichier:
 
             contenu = Fichier.readline().strip("Etat={}\n")  # recupere la premiere ligne et enleve le retour à la ligne

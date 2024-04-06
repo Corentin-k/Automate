@@ -62,33 +62,39 @@ def definition(mot):
 
 
 def recherche_mot():
-    """Permet de rechercher un mot dans un dictionnaire
-    :return None
-    """
+    """Permet de rechercher un mot dans un dictionnaire"""
     while True:
         print("\nQuel mot voulez-vous rechercher ?")
         mot_recherche = input(">>> ").lower()
-        if definition(mot_recherche):
-            continue
-        else:
-            print("\nCe mot n'est pas présent dans le dictionnaire.")
-            print("\nVoulez-vous chercher un autre mot ? (o/n)")
-            choix = input(">>> ").lower()
-            if choix not in ["oui", "o", "yes", "y"]:
-                return
+        try:
+            if not definition(mot_recherche):
+                raise ValueError("Le mot n'est pas présent dans le dictionnaire.")
+        except ValueError as e:
+            # Le mot n'a pas été trouvé
+            print("\n[bold yellow]Attention :[/bold yellow] " + str(e))
+        print("\nVoulez-vous chercher un autre mot ? (o/n)")
+        choix = input(">>> ").lower()
+        if choix not in ["oui", "o", "yes", "y"]:
+            return
+from rich.theme import Theme
 
 
 def afficher_code():
+
     """Affiche le code d'une fonction de la classe Automate
     :return:
     """
+
     tree = Tree("Automate")
-    for name, obj in inspect.getmembers(Automate):
-        if inspect.isfunction(obj):
+
+    for name, obj in inspect.getmembers(Automate):  # On récupère les membres de la classe Automate
+        if inspect.isfunction(obj):  # On vérifie que l'objet est une fonction
             tree.add(name)
+
     print(tree)
     print("Quelle fonction voulez-vous afficher ?")
     fonction = input(">>> ")
+
     try:
         fonction = "Automate." + fonction
         code = inspect.getsource(eval(fonction))
@@ -96,7 +102,5 @@ def afficher_code():
         print(syntax)
     except AttributeError:
         print("La fonction spécifiée n'existe pas dans Automate.")
-    except TypeError:
-        print("La fonction spécifiée n'est pas un objet que vous pouvez afficher.")
     except Exception as e:
         print(f"Une erreur s'est produite : {e}")

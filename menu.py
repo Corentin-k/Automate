@@ -1,17 +1,18 @@
 from rich.progress import track
 import time
 import os
-
+from rich.console import Console
+from rich.table import Table
 from dico import *
 from automate import *
-
 
 # Lien vers la documentation de la fonction os.listdir
 # https://python.readthedocs.io/en/stable/library/os.html#os.listdir
 
+console = Console(color_system="auto")
+
 
 def print_help():
-    console = Console(color_system="auto")
     console.print("Le programme permet d'analyser les automates")
     console.print("Il peut analyser un automate pour déterminer s'il est [underline]déterministe[/underline], "
                   "[underline]standardisé[/underline], [underline]complet[/underline] ou [underline]minimisé"
@@ -22,8 +23,12 @@ def print_help():
 
 
 def print_credit():
-    console = Console(color_system="auto")
-    console.print("[red]Ce projet a été réalisé par ....... [/red]")
+    console.print("[red]Ce projet a été réalisé par : [/red]")
+    console.print("Corentin KERVAGORET")
+    console.print("_____")
+    console.print("_____")
+    console.print("_____")
+
     console.print("Dans le cadre du cours de Automates finis et expression relationnelles en L2 à l'Efrei")
     console.print("@2024")
 
@@ -49,39 +54,52 @@ def fichier():
     return dossier_programme + "\\" + fichiers[choix - 1]
 
 
-def menu():
-    print("Menu :")
-    print("1. voir le code d'une fonction afficher_code")
-    print("2. Accéder à la définition d'un mot")
-    print("3. Afficher l'aide")
-    print("4. Ouvrir un automate")
-    print("5. Afficher les_credits")
-    print("6. Quitter")
+def afficher_menu():
+    table = Table(title="Menu")
+    table.add_column("Option", style="cyan")
+    table.add_column("Raccourcis", style="yellow")
+    table.add_column("Description", style="magenta")
 
+    options = [
+        ("1", "voir", "Voir le code d'une fonction afficher_code"),
+        ("2", "def", "Accéder à la définition d'un mot"),
+        ("3", "help", "Afficher l'aide"),
+        ("4", "open", "Ouvrir un automate"),
+        ("5", "credit", "Afficher les crédits"),
+        ("6", "quit", "Quitter"),
+        ("7", "menu", "Afficher le menu")
+    ]
+
+    for option, raccourcis, description in options:
+        table.add_row(option, raccourcis, description)
+
+    print(table)
     print("Choisissez une option :")
-    choix = input(">>>")
 
-    if choix == "1":
+
+def menu():
+
+    choix = input(">>>").lower()
+
+    if choix == "1" or choix == "voir":
         afficher_code()
-    elif choix == "2":
+    elif choix == "2" or choix == "def":
         recherche_mot()
-    elif choix == "3":
+    elif choix == "3" or choix == "help":
         print_help()
-    elif choix == "5":
+    elif choix == "4" or choix == "open":
+
+        automate = Automate(fichier())
+        automate.affichage_automate()
+        automate.completer()
+
+    elif choix == "5" or choix == "credit":
         print_credit()
-
-    elif choix == "4":
-        try:
-
-            automate = Automate(fichier())
-
-            automate.affichage_automate()
-            automate.completer()
-        except:
-            print("Erreur lors de l'ouverture de l'automate")
-            print("Verifier votre format d'automate")
-
-    elif choix == "7":
-        print("Au revoir !")
+    elif choix == "6" or choix == "quit":
+        console.print("Au revoir !")
+        return
+    elif choix == "7" or choix == "menu":
+        menu()
     else:
-        print("Option invalide.")
+        console.print("Option invalide.", style="bold red")
+
