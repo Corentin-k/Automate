@@ -161,15 +161,24 @@ class Automate(AutomateInterface, ABC):
             return
         self.etat.append("i")
         # Création des transitions sortantes du nouvel état initial
+
         transitions_nouvel_etat = {}
         for lettre in self.langage:
             transitions_nouvel_etat[lettre] = []
             for etat_initial in self.entree:
                 if lettre in self.transition.get(etat_initial, {}):
-                    transitions_nouvel_etat[lettre].extend(self.transition[etat_initial][lettre])
+                    transitions_nouvel_etat[lettre].extend(self.transition[etat_initial][lettre]) # on concatène les listes
+
+        # nous allons enlever les doublons maintenant
+        for doublon in transitions_nouvel_etat:
+            transitions_nouvel_etat[doublon] = sorted(list(set(transitions_nouvel_etat[doublon]))) # nous mettons en liste afin de pouvoir accéder à l'indexation si besoin / set pour enlever les doublons / sorted pour trier dans l'ordre croissant
+
         # nouvel état initial
+
         self.transition["i"] = transitions_nouvel_etat
+
         # états d'entrée et de sortie
+
         self.entree = ["i"]
         self.sortie = [etat for etat in self.sortie if etat != "i"]
         self.affichage_automate()
