@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 
 class AutomateInterface(ABC):
-    """Interface de base pour les automates."""
+    """Interface de base pour les automates-test."""
 
     @abstractmethod
     def est_complet(self):

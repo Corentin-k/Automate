@@ -30,6 +30,7 @@ class Automate(AutomateInterface, ABC):
     """
 
     def __init__(self, lien_fichier):
+        self.verif = None
         self.etat = []
         self.langage = []
         self.entree = []
@@ -75,9 +76,18 @@ class Automate(AutomateInterface, ABC):
                 self.transition[etat] = {}
                 for action in actions:
                     symbole, destination = action.strip().split()
+
                     destination = destination.strip().split(",")
 
                     self.transition[etat][symbole] = destination
+        self.verif_automate()
+
+    def verif_automate(self):
+
+        if len(self.etat) == 0 or len(self.transition) == 0:
+            self.verif = False
+        else:
+            self.verif = True
 
     def __str__(self):
         affichage = f"Etat: {self.etat}\nLangage: {self.langage}\nEntree : {self.entree},\nSortie : {self.sortie},"

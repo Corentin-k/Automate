@@ -13,7 +13,7 @@ console = Console(color_system="auto")
 
 
 def print_help():
-    console.print("Le programme permet d'analyser les automates")
+    console.print("Le programme permet d'analyser les automates-test")
     console.print("Il peut analyser un automate pour déterminer s'il est [underline]déterministe[/underline], "
                   "[underline]standardisé[/underline], [underline]complet[/underline] ou [underline]minimisé"
                   "[/underline].")
@@ -34,7 +34,7 @@ def print_credit():
 
 
 def fichier():
-    dossier_programme = os.path.dirname(__file__) + "\\automates"
+    dossier_programme = os.path.dirname(__file__) + "\\automates-test"
     print(dossier_programme)
     fichiers = []
     tree = Tree("Fichier")
@@ -90,9 +90,12 @@ def menu():
     elif choix == "4" or choix == "open":
 
         automate = Automate(fichier())
-        automate.affichage_automate()
-        automate.completer()
-
+        if automate.verif:
+            automate.affichage_automate()
+            automate.completer()
+        else:
+            print("Erreur dans la construction de l'automate")
+            print("Regarder la structure dans le fichier automate-exemple.txt")
     elif choix == "5" or choix == "credit":
         print_credit()
     elif choix == "6" or choix == "quit":
