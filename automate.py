@@ -176,12 +176,14 @@ class Automate(AutomateInterface, ABC):
         self.standard = True
 
     def est_deterministe(self):
-        if self.standard :
+        bool = False
+        if self.est_standard():
             for etat in self.etat:
                 for lettre in self.langage:
                     if len(self.transition.get(etat, {}).get(lettre, [])) > 1:
                         return False
-            return True
+            bool = True
+        return bool
 
     def determiniser(self):
         pass

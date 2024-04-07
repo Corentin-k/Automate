@@ -93,12 +93,17 @@ def menu():
         if automate.verif:
             automate.affichage_automate()
             automate.completer()
-            if automate.est_deterministe():
+            if automate.est_deterministe() == True:
                 print("L'automate est déterministe")
             else:
                 print("L'automate n'est pas déterministe")
             automate.determiniser()
+            automate.affichage_automate()
             automate.standardiser()
+            if automate.est_deterministe() == True:
+                print("L'automate est déterministe")
+            else:
+                print("L'automate n'est pas déterministe")
         else:
             print("Erreur dans la construction de l'automate")
             print("Regarder la structure dans le fichier automate-exemple.txt")
