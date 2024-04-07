@@ -71,6 +71,7 @@ class Automate(AutomateInterface, ABC):
                 contenu = Fichier.readline().strip()
                 if not contenu:
                     break
+                print(contenu)
                 transition = contenu.split(":")
                 etat, actions = transition[0], transition[1].split(";")
                 self.transition[etat] = {}
@@ -153,11 +154,34 @@ class Automate(AutomateInterface, ABC):
                 return False
         return True
 
+
     def standardiser(self):
-        pass
+        if self.est_standard():
+            print("Déjà standard")
+            return
+        self.etat.append("i")
+        # Création des transitions sortantes du nouvel état initial
+        transitions_nouvel_etat = {}
+        for lettre in self.langage:
+            transitions_nouvel_etat[lettre] = []
+            for etat_initial in self.entree:
+                if lettre in self.transition.get(etat_initial, {}):
+                    transitions_nouvel_etat[lettre].extend(self.transition[etat_initial][lettre])
+        # nouvel état initial
+        self.transition["i"] = transitions_nouvel_etat
+        # états d'entrée et de sortie
+        self.entree = ["i"]
+        self.sortie = [etat for etat in self.sortie if etat != "i"]
+        self.affichage_automate()
+        self.standard = True
 
     def est_deterministe(self):
-        pass
+        if self.standard :
+            for etat in self.etat:
+                for lettre in self.langage:
+                    if len(self.transition.get(etat, {}).get(lettre, [])) > 1:
+                        return False
+            return True
 
     def determiniser(self):
         pass
