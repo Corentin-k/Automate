@@ -71,7 +71,6 @@ class Automate(AutomateInterface, ABC):
                 contenu = Fichier.readline().strip()
                 if not contenu:
                     break
-                print(contenu)
                 transition = contenu.split(":")
                 etat, actions = transition[0], transition[1].split(";")
                 self.transition[etat] = {}
@@ -154,33 +153,34 @@ class Automate(AutomateInterface, ABC):
                 return False
         return True
 
-
     def standardiser(self):
         if self.est_standard():
             print("Déjà standard")
             return
         self.etat.append("i")
         # Création des transitions sortantes du nouvel état initial
-
         transitions_nouvel_etat = {}
         for lettre in self.langage:
             transitions_nouvel_etat[lettre] = []
             for etat_initial in self.entree:
                 if lettre in self.transition.get(etat_initial, {}):
-                    transitions_nouvel_etat[lettre].extend(self.transition[etat_initial][lettre]) # on concatène les listes
+                    transitions_nouvel_etat[lettre].extend(
+                        self.transition[etat_initial][lettre])  # on concatène les listes
+                if etat_initial in self.sortie:  # Si l'état initial est dans la sortie, alors "i" doit être dans la sortie
+                    self.sortie.append("i")
 
         # nous allons enlever les doublons maintenant
         for doublon in transitions_nouvel_etat:
-            transitions_nouvel_etat[doublon] = sorted(list(set(transitions_nouvel_etat[doublon]))) # nous mettons en liste afin de pouvoir accéder à l'indexation si besoin / set pour enlever les doublons / sorted pour trier dans l'ordre croissant
+            transitions_nouvel_etat[doublon] = sorted(list(set(transitions_nouvel_etat[
+                                                                   doublon])))  # nous mettons en liste afin de pouvoir accéder à l'indexation si besoin / set pour enlever les doublons / sorted pour trier dans l'ordre croissant
 
         # nouvel état initial
 
         self.transition["i"] = transitions_nouvel_etat
 
         # états d'entrée et de sortie
-
         self.entree = ["i"]
-        self.sortie = [etat for etat in self.sortie if etat != "i"]
+        self.sortie = list(set(self.sortie))  # Enlever les doublons dans la sortie
         self.affichage_automate()
         self.standard = True
 
