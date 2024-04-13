@@ -1,0 +1,5 @@
+Etat={0}
+Langage={}
+Entree={0}
+Sortie={0}
+Transition=

@@ -34,7 +34,7 @@ def print_credit():
 
 
 def fichier():
-    dossier_programme = os.path.dirname(__file__) + "\\automates-test"
+    dossier_programme = os.path.dirname(__file__) + "\\fichier_automate"
     print(dossier_programme)
     fichiers = []
     tree = Tree("Fichier")

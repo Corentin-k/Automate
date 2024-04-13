@@ -1,0 +1,6 @@
+Etat={0,1}
+Langage={a}
+Entree={1}
+Sortie={0}
+Transition=
+1: a 0,1
