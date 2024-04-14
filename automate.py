@@ -106,6 +106,8 @@ class Automate(AutomateInterface, ABC):
                 table.add_column(lettre, justify="center", style="magenta")
         for etat in self.etat:
 
+            etat_str = ','.join(etat)
+
             transitions = {}
             for lettre in self.langage:
                 transition = self.transition.get(etat, {}).get(lettre, [])
@@ -121,10 +123,9 @@ class Automate(AutomateInterface, ABC):
                 type_etat = "[red]S[/red]"
             else:
                 type_etat = ""
-            table.add_row(type_etat, etat, *transitions.values())
+            table.add_row(type_etat, etat_str, *transitions.values())
 
         console.print(table)
-
     def est_complet(self):
         for etat in self.etat:
             for lettre in self.langage:
@@ -192,7 +193,7 @@ class Automate(AutomateInterface, ABC):
 
     def est_deterministe(self):
         bool = False
-        if self.est_standard():
+        if not len(self.entree) >= 2:
             for etat in self.etat:
                 for lettre in self.langage:
                     if len(self.transition.get(etat, {}).get(lettre, [])) > 1:

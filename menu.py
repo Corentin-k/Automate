@@ -42,7 +42,7 @@ def fichier():
         if fichier_.endswith(".txt") and fichier_.startswith("automate"):
             fichiers.append(fichier_)
             tree.add(fichier_)
-            time.sleep(0.5)
+            time.sleep(0)
             os.system('cls' if os.name == 'nt' else 'clear')
             print(tree)
 
@@ -104,6 +104,10 @@ def menu():
                 print("L'automate est déterministe")
             else:
                 print("L'automate n'est pas déterministe")
+            if automate.est_standard() == True:
+                print("L'automate est standard")
+            else:
+                print("L'automate n'est pas standard")
         else:
             print("Erreur dans la construction de l'automate")
             print("Regarder la structure dans le fichier automate-exemple.txt")
