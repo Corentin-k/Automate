@@ -148,16 +148,57 @@ class Automate(AutomateInterface, ABC):
         self.affichage_automate()
 
     def est_standard(self):
-        for etat in self.etat:
-            if etat in self.entree and etat in self.sortie:
-                return False
-        return True
+        if len(self.entree) >= 2:
+            return False
+
+        else:
+
+            # Regarder si un état renvoie vers l'état d'entrée
+            for etat in self.etat:
+                for lettre in self.langage:
+                    if self.entree[0] in self.transition.get(etat, {}).get(lettre, []):
+                        return False
+            return True
 
     def standardiser(self):
-        pass
+        if self.est_standard():
+            print("Déjà standard")
+            return
+        self.etat.append("i")
+        # Création des transitions sortantes du nouvel état initial
+        transitions_nouvel_etat = {}
+        for lettre in self.langage:
+            transitions_nouvel_etat[lettre] = []
+            for etat_initial in self.entree:
+                if lettre in self.transition.get(etat_initial, {}):
+                    transitions_nouvel_etat[lettre].extend(
+                        self.transition[etat_initial][lettre])  # on concatène les listes
+                if etat_initial in self.sortie:  # Si l'état initial est dans la sortie, alors "i" doit être dans la sortie
+                    self.sortie.append("i")
+
+        # nous allons enlever les doublons maintenant
+        for doublon in transitions_nouvel_etat:
+            transitions_nouvel_etat[doublon] = sorted(list(set(transitions_nouvel_etat[doublon])))  # nous mettons en liste afin de pouvoir accéder à l'indexation si besoin / set pour enlever les doublons / sorted pour trier dans l'ordre croissant
+
+        # nouvel état initial
+
+        self.transition["i"] = transitions_nouvel_etat
+
+        # états d'entrée et de sortie
+        self.entree = ["i"]
+        self.sortie = list(set(self.sortie))  # Enlever les doublons dans la sortie
+        self.affichage_automate()
+        self.standard = True
 
     def est_deterministe(self):
-        pass
+        bool = False
+        if self.est_standard():
+            for etat in self.etat:
+                for lettre in self.langage:
+                    if len(self.transition.get(etat, {}).get(lettre, [])) > 1:
+                        return False
+            bool = True
+        return bool
 
     def determiniser(self):
         pass

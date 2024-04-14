@@ -15,7 +15,6 @@ if __name__ == '__main__':
     # # afficher_code()
     # # automate = Automate(fichier())
     # # automate.affichage_automate()
-    print("ouais")
     afficher_menu()
     while True:
         menu()
