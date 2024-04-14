@@ -1,3 +1,5 @@
 /dist/
 /build/
 /.venv/
+/.idea/
+/__pycache__/

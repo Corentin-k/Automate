@@ -148,10 +148,17 @@ class Automate(AutomateInterface, ABC):
         self.affichage_automate()
 
     def est_standard(self):
-        for etat in self.etat:
-            if etat in self.entree and etat in self.sortie:
-                return False
-        return True
+        if len(self.entree) >= 2:
+            return False
+
+        else:
+
+            # Regarder si un état renvoie vers l'état d'entrée
+            for etat in self.etat:
+                for lettre in self.langage:
+                    if self.entree[0] in self.transition.get(etat, {}).get(lettre, []):
+                        return False
+            return True
 
     def standardiser(self):
         if self.est_standard():
@@ -171,8 +178,7 @@ class Automate(AutomateInterface, ABC):
 
         # nous allons enlever les doublons maintenant
         for doublon in transitions_nouvel_etat:
-            transitions_nouvel_etat[doublon] = sorted(list(set(transitions_nouvel_etat[
-                                                                   doublon])))  # nous mettons en liste afin de pouvoir accéder à l'indexation si besoin / set pour enlever les doublons / sorted pour trier dans l'ordre croissant
+            transitions_nouvel_etat[doublon] = sorted(list(set(transitions_nouvel_etat[doublon])))  # nous mettons en liste afin de pouvoir accéder à l'indexation si besoin / set pour enlever les doublons / sorted pour trier dans l'ordre croissant
 
         # nouvel état initial
 
