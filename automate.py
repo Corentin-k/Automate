@@ -29,7 +29,7 @@ class Automate(AutomateInterface, ABC):
 
     """
 
-    def __init__(self, lien_fichier):
+    def __init__(self, lien_fichier=None):
         self.verif = None
         self.etat = []
         self.langage = []
@@ -40,7 +40,8 @@ class Automate(AutomateInterface, ABC):
         self.standard = False
         self.deterministe = False
         self.minimal = False
-        self._construire_automate(lien_fichier)
+        if lien_fichier:
+            self._construire_automate(lien_fichier)
 
     def _construire_automate(self, lien_fichier):  # Fonction privée indiquée par le _
         with open(lien_fichier, "r") as Fichier:
@@ -126,6 +127,7 @@ class Automate(AutomateInterface, ABC):
             table.add_row(type_etat, etat_str, *transitions.values())
 
         console.print(table)
+
     def est_complet(self):
         for etat in self.etat:
             for lettre in self.langage:
@@ -179,7 +181,8 @@ class Automate(AutomateInterface, ABC):
 
         # nous allons enlever les doublons maintenant
         for doublon in transitions_nouvel_etat:
-            transitions_nouvel_etat[doublon] = sorted(list(set(transitions_nouvel_etat[doublon])))  # nous mettons en liste afin de pouvoir accéder à l'indexation si besoin / set pour enlever les doublons / sorted pour trier dans l'ordre croissant
+            transitions_nouvel_etat[doublon] = sorted(list(set(transitions_nouvel_etat[
+                                                                   doublon])))  # nous mettons en liste afin de pouvoir accéder à l'indexation si besoin / set pour enlever les doublons / sorted pour trier dans l'ordre croissant
 
         # nouvel état initial
 
@@ -196,13 +199,74 @@ class Automate(AutomateInterface, ABC):
         if not len(self.entree) >= 2:
             for etat in self.etat:
                 for lettre in self.langage:
+
                     if len(self.transition.get(etat, {}).get(lettre, [])) > 1:
+                        print(self.transition.get(etat, {}).get(lettre, []))
                         return False
             bool = True
         return bool
 
+    def copier_automate(self, autre_automate):
+
+        self.etat = autre_automate.etat[:]
+        self.langage = autre_automate.langage[:]
+        self.entree = autre_automate.entree[:]
+        self.sortie = autre_automate.sortie[:]
+        self.transition = dict(autre_automate.transition)
+        self.complet = autre_automate.complet
+        self.standard = autre_automate.standard
+        self.deterministe = autre_automate.deterministe
+        self.minimal = autre_automate.minimal
+
     def determiniser(self):
-        pass
+        if self.est_deterministe():
+            print("Erreur : L'automate est déjà déterministe.")
+            return
+        deterministe_automate = Automate()
+
+        deterministe_automate.langage = self.langage
+
+        etats_a_traiter = [set(self.entree)]
+        etats_traites = set()
+
+        while etats_a_traiter:
+            new_etat = etats_a_traiter.pop(0)
+            etats_traites.add(tuple(new_etat))
+            deterministe_automate.etat.append(tuple(sorted(new_etat)))
+
+            for symb in self.langage:
+                etats_atteignable = set()
+
+                for etat in new_etat:
+                    if symb in self.transition.get(etat, {}):
+                        etats_atteignable.update(self.transition[etat][symb])
+
+                if tuple(etats_atteignable) not in etats_traites:
+                    etats_a_traiter.append(etats_atteignable)
+                    etats_traites.add(tuple(etats_atteignable))
+
+                cle_etat = tuple(sorted(new_etat))
+                if cle_etat not in deterministe_automate.transition:
+                    deterministe_automate.transition[cle_etat] = {}
+                deterministe_automate.transition[cle_etat].update({symb: tuple(sorted(etats_atteignable))})
+
+        deterministe_automate.entree = tuple(sorted(self.entree))
+        deterministe_automate.sortie = [etat for etat in deterministe_automate.etat if
+                                        set(etat).intersection(self.sortie)]
+
+        # Ajout des états d'entrée dans l'automate deterministe
+        deterministe_automate.entree=[]
+        for etat in self.entree:
+            for tuple_etat in deterministe_automate.etat:
+
+                if etat in tuple_etat:
+                    if tuple_etat not in deterministe_automate.entree:
+                        deterministe_automate.entree.append(tuple_etat)
+
+
+        self.copier_automate(deterministe_automate)
+        self.deterministe = True
+        print("L'automate a été déterminisé avec succès.")
 
     def minimiser(self):
         """Minimise l'automate si nécessaire."""

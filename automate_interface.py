@@ -4,6 +4,10 @@ from abc import ABC, abstractmethod
 
 class AutomateInterface(ABC):
     """Interface de base pour les automates-test."""
+    @abstractmethod
+    def copier_automate(self, autre_automate):
+        """Copie un automate."""
+        pass
 
     @abstractmethod
     def est_complet(self):
