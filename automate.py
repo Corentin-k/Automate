@@ -107,8 +107,6 @@ class Automate(AutomateInterface, ABC):
                 table.add_column(lettre, justify="center", style="magenta")
         for etat in self.etat:
 
-            etat_str = ','.join(etat)
-
             transitions = {}
             for lettre in self.langage:
                 transition = self.transition.get(etat, {}).get(lettre, [])
@@ -124,7 +122,7 @@ class Automate(AutomateInterface, ABC):
                 type_etat = "[red]S[/red]"
             else:
                 type_etat = ""
-            table.add_row(type_etat, etat_str, *transitions.values())
+            table.add_row(type_etat, etat, *transitions.values())
 
         console.print(table)
 
@@ -199,9 +197,7 @@ class Automate(AutomateInterface, ABC):
         if not len(self.entree) >= 2:
             for etat in self.etat:
                 for lettre in self.langage:
-
                     if len(self.transition.get(etat, {}).get(lettre, [])) > 1:
-                        print(self.transition.get(etat, {}).get(lettre, []))
                         return False
             bool = True
         return bool
@@ -222,6 +218,7 @@ class Automate(AutomateInterface, ABC):
         if self.est_deterministe():
             print("Erreur : L'automate est déjà déterministe.")
             return
+
         deterministe_automate = Automate()
 
         deterministe_automate.langage = self.langage
@@ -232,7 +229,10 @@ class Automate(AutomateInterface, ABC):
         while etats_a_traiter:
             new_etat = etats_a_traiter.pop(0)
             etats_traites.add(tuple(new_etat))
-            deterministe_automate.etat.append(tuple(sorted(new_etat)))
+
+            reformat_new_etat = ''.join(sorted(new_etat))
+
+            deterministe_automate.etat.append(tuple(sorted(reformat_new_etat)))
 
             for symb in self.langage:
                 etats_atteignable = set()
@@ -245,24 +245,29 @@ class Automate(AutomateInterface, ABC):
                     etats_a_traiter.append(etats_atteignable)
                     etats_traites.add(tuple(etats_atteignable))
 
-                cle_etat = tuple(sorted(new_etat))
+                reformat_destinations = ''.join(sorted(etats_atteignable))
+
+                cle_etat = ''.join(sorted(reformat_new_etat))
                 if cle_etat not in deterministe_automate.transition:
                     deterministe_automate.transition[cle_etat] = {}
-                deterministe_automate.transition[cle_etat].update({symb: tuple(sorted(etats_atteignable))})
 
-        deterministe_automate.entree = tuple(sorted(self.entree))
-        deterministe_automate.sortie = [etat for etat in deterministe_automate.etat if
-                                        set(etat).intersection(self.sortie)]
+                deterministe_automate.transition[cle_etat][symb] = [reformat_destinations]
 
-        # Ajout des états d'entrée dans l'automate deterministe
-        deterministe_automate.entree=[]
+        # Transformer les états tuple en string pour l'affichage
+        deterministe_automate.etat = [''.join(sorted(etat)) for etat in deterministe_automate.etat]
+        deterministe_automate.entree = []
+        deterministe_automate.sortie = []
+        # Regarder si un état est un état d'entrée ou de sortie dans l'automate initial
         for etat in self.entree:
             for tuple_etat in deterministe_automate.etat:
-
                 if etat in tuple_etat:
                     if tuple_etat not in deterministe_automate.entree:
                         deterministe_automate.entree.append(tuple_etat)
-
+        for etat in self.sortie:
+            for tuple_etat in deterministe_automate.etat:
+                if etat in tuple_etat:
+                    if tuple_etat not in deterministe_automate.sortie:
+                        deterministe_automate.sortie.append(tuple_etat)
 
         self.copier_automate(deterministe_automate)
         self.deterministe = True
