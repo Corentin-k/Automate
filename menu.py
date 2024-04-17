@@ -98,6 +98,7 @@ def menu():
             else:
                 print("L'automate n'est pas déterministe")
             automate.determiniser()
+
             automate.affichage_automate()
             automate.standardiser()
             if automate.est_deterministe() == True:
@@ -111,6 +112,10 @@ def menu():
         else:
             print("Erreur dans la construction de l'automate")
             print("Regarder la structure dans le fichier automate-exemple.txt")
+
+        automate.est_minimal()
+        automate.affichage_automate()
+
     elif choix == "5" or choix == "credit":
         print_credit()
     elif choix == "6" or choix == "quit":

@@ -130,13 +130,27 @@ class Automate(AutomateInterface, ABC):
         for etat in self.etat:
             for lettre in self.langage:
                 if not self.transition.get(etat, {}).get(lettre, []):
+                    self.complet = False
                     return False
+        self.complet = True
         return True
 
     def completer(self):
-        if self.est_complet():
+        if self.complet:
             print("Deja complet")
             return
+        if self.deterministe is None:
+            print("Voulez vous determiniser l'automate ?")
+            choix = input(">>>")
+            if choix in ["oui", "o", "yes", "y"]:
+                self.determiniser()
+            else:
+                print("Erreur : L'automate doit être non déterministe pour être complété.")
+                return
+        elif not self.deterministe:
+            print("Erreur : L'automate doit être déterministe pour être completé.")
+            return
+
         for etat in self.etat:
             for lettre in self.langage:
                 if not self.transition.get(etat, {}).get(lettre, []):
@@ -146,10 +160,12 @@ class Automate(AutomateInterface, ABC):
         self.transition["p"] = {lettre: ["p"] for lettre in self.langage}
         self.complet = True
         self.etat.append("p")
+        print("L'automate a été complété avec succès.")
         self.affichage_automate()
 
     def est_standard(self):
         if len(self.entree) >= 2:
+            self.standard = False
             return False
 
         else:
@@ -158,11 +174,13 @@ class Automate(AutomateInterface, ABC):
             for etat in self.etat:
                 for lettre in self.langage:
                     if self.entree[0] in self.transition.get(etat, {}).get(lettre, []):
+                        self.standard = False
                         return False
+            self.standard = True
             return True
 
     def standardiser(self):
-        if self.est_standard():
+        if self.standard:
             print("Déjà standard")
             return
         self.etat.append("i")
@@ -198,8 +216,10 @@ class Automate(AutomateInterface, ABC):
             for etat in self.etat:
                 for lettre in self.langage:
                     if len(self.transition.get(etat, {}).get(lettre, [])) > 1:
+                        self.deterministe = False
                         return False
             bool = True
+        self.deterministe = bool
         return bool
 
     def copier_automate(self, autre_automate):
@@ -215,7 +235,7 @@ class Automate(AutomateInterface, ABC):
         self.minimal = autre_automate.minimal
 
     def determiniser(self):
-        if self.est_deterministe():
+        if self.deterministe or self.est_deterministe():
             print("Erreur : L'automate est déjà déterministe.")
             return
 
@@ -268,8 +288,11 @@ class Automate(AutomateInterface, ABC):
                 if etat in tuple_etat:
                     if tuple_etat not in deterministe_automate.sortie:
                         deterministe_automate.sortie.append(tuple_etat)
-
+        print(deterministe_automate)
         self.copier_automate(deterministe_automate)
+        for etat in self.etat:
+            if etat=="":
+                self.etat.remove(etat)
         self.deterministe = True
         print("L'automate a été déterminisé avec succès.")
 
@@ -278,4 +301,146 @@ class Automate(AutomateInterface, ABC):
         pass
 
     def est_minimal(self):
-        pass
+        # if not self.est_deterministe():
+        # print("Erreur : L'automate doit être déterministe pour être minimal.")
+        et = []  # Etats terminaux
+        ent = []  # Etats non terminaux
+
+        for etat in self.etat:
+            if etat in self.sortie:
+                et.append(etat)
+            else:
+                ent.append(etat)
+        # print(et,ent)
+
+        automate_modifie = Automate()
+        automate_modifie.copier_automate(self)
+        automate_copie2 = Automate()
+        automate_copie2.copier_automate(self)
+        temp = {}
+
+        for etat in automate_modifie.etat:
+            temp1 = automate_copie2.transition.get(etat, {})
+            temp[etat] = dict(temp1)
+
+        for etat in automate_modifie.etat:
+            for symbole in automate_modifie.langage:
+                destinations = automate_modifie.transition.get(etat, {}).get(symbole, [])
+                nouvelles_destinations = []
+                for destination in destinations:
+                    if destination in et:
+                        nouvelles_destinations.append("T")
+                    elif destination in ent:
+                        nouvelles_destinations.append("NT")
+                    else:
+                        nouvelles_destinations.append(destination)
+                automate_modifie.transition[etat][symbole] = nouvelles_destinations
+
+        motifs_transitions = {}
+
+        for etat_terminal in et:
+            transitions_etat_terminal = automate_modifie.transition.get(etat_terminal, {})
+            motif = ""
+            for symbole, destinations in transitions_etat_terminal.items():
+                motif += "".join(destinations)
+            if motif not in motifs_transitions:
+                motifs_transitions[motif] = [etat_terminal]
+            else:
+                motifs_transitions[motif].append(etat_terminal)
+
+        motifs_transitions2 = {}
+
+        for etat_terminal in ent:
+            transitions_etat_terminal = automate_modifie.transition.get(etat_terminal, {})
+            motif = ""
+            for symbole, destinations in transitions_etat_terminal.items():
+                motif += "".join(destinations)
+            if motif not in motifs_transitions2:
+                motifs_transitions2[motif] = [etat_terminal]
+            else:
+                motifs_transitions2[motif].append(etat_terminal)
+
+        motifs_transitions.update(motifs_transitions2)
+
+        transitions_avant_fusion = {}
+        for etat, transitions in temp.items():
+            transitions_avant_fusion[etat] = {}
+            for symbole, destinations in transitions.items():
+                groupes_destinations = []
+                for destination in destinations:
+                    for motif, etats in motifs_transitions.items():
+                        if destination in etats:
+                            groupes_destinations.append(motif)
+                            break
+                transitions_avant_fusion[etat][symbole] = groupes_destinations
+
+        # print(transitions_avant_fusion,"\n")
+        # print(motifs_transitions)
+
+        groupes_separes = {}
+
+        for motif, etats_du_groupe in motifs_transitions.items():
+            transitions_du_groupe = {}
+            for etat in etats_du_groupe:
+                transitions_du_groupe[etat] = transitions_avant_fusion[etat]
+
+            # print(f"Transitions du groupe de motifs {motif} :",transitions_du_groupe)
+
+            for etat, transitions_etat in transitions_du_groupe.items():
+                Similaire = False
+                for groupe, transitions_groupe in groupes_separes.items():
+                    if transitions_avant_fusion[transitions_groupe[0]] == transitions_etat:
+                        groupes_separes[groupe].append(etat)
+                        Similaire = True
+                        break
+                if not Similaire:
+                    groupes_separes[f"NewGroup{len(groupes_separes) + 1}"] = [etat]
+
+        # print("Groupes séparés :",groupes_separes)
+        # for etat, transitions in temp.items():
+        # print(etat,transitions)
+        new_entree = []
+        new_sortie = []
+        # print(motifs_transitions)
+        for motif, etats in groupes_separes.items():
+            nouvel_etat = "".join(etats)
+            transitions_nouvel_etat = {}
+            for etat in etats:
+                transitions_etat = temp[etat]
+
+                for symbole, destinations in transitions_etat.items():
+                    # print(symbole,":",destinations)
+                    if symbole not in transitions_nouvel_etat:
+                        transitions_nouvel_etat[symbole] = []
+                    for destination in destinations:
+                        # print(":", destination)
+                        # print(transitions_nouvel_etat, "\n")
+                        if destination not in transitions_nouvel_etat[symbole]:
+                            transitions_nouvel_etat[symbole].append(destination)
+            # print(transitions_nouvel_etat, ":::")
+            for symbole, destinations in transitions_nouvel_etat.items():
+                # print(symbole,destinations)
+                transitions_nouvel_etat[symbole] = "".join(sorted(list(set(destinations))))
+            # print(transitions_etat)
+
+            automate_copie2.etat.append(nouvel_etat)
+            automate_copie2.transition[nouvel_etat] = transitions_nouvel_etat
+
+            for etat in etats:
+                if etat in self.entree:
+                    new_entree.append(nouvel_etat)
+                if etat in self.sortie:
+                    new_sortie.append(nouvel_etat)
+
+            for etat in etats:
+                if etat != nouvel_etat:
+                    del automate_copie2.transition[etat]
+                    automate_copie2.etat.remove(etat)
+                else:
+                    automate_copie2.etat.remove(nouvel_etat)
+
+        automate_copie2.entree = new_entree
+        automate_copie2.sortie = new_sortie
+
+        print(automate_copie2)
+        automate_copie2.affichage_automate()
