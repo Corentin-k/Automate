@@ -1,0 +1,11 @@
+Etat={02,01,12,012,1,p}
+Langage={a,b}
+Entree={02}
+Sortie={01,02,12,012,1}
+Transition=
+01: a 1; b 012
+02: a 01; b 12
+12: a 01; b 02
+012: a 01; b 012
+1: a p; b 02
+p: a p; b p
