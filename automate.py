@@ -43,7 +43,7 @@ class Automate(AutomateInterface, ABC):
         if lien_fichier:
             self._construire_automate(lien_fichier)
 
-    def _construire_automate(self, lien_fichier):  # Fonction privée indiquée par le _
+    def _construire_automate(self, lien_fichier):  # Fonction privée indiquée par le '_'
         with open(lien_fichier, "r") as Fichier:
 
             contenu = Fichier.readline().strip("Etat={}\n")  # recupere la premiere ligne et enleve le retour à la ligne
@@ -211,16 +211,16 @@ class Automate(AutomateInterface, ABC):
         self.standard = True
 
     def est_deterministe(self):
-        bool = False
+        bool1 = False
         if not len(self.entree) >= 2:
             for etat in self.etat:
                 for lettre in self.langage:
                     if len(self.transition.get(etat, {}).get(lettre, [])) > 1:
                         self.deterministe = False
                         return False
-            bool = True
-        self.deterministe = bool
-        return bool
+            bool1 = True
+        self.deterministe = bool1
+        return bool1
 
     def copier_automate(self, autre_automate):
 
@@ -240,7 +240,6 @@ class Automate(AutomateInterface, ABC):
             return
 
         deterministe_automate = Automate()
-
         deterministe_automate.langage = self.langage
 
         etats_a_traiter = [set(self.entree)]
@@ -251,8 +250,7 @@ class Automate(AutomateInterface, ABC):
             etats_traites.add(tuple(new_etat))
 
             reformat_new_etat = ''.join(sorted(new_etat))
-
-            deterministe_automate.etat.append(tuple(sorted(reformat_new_etat)))
+            deterministe_automate.etat.append(reformat_new_etat)
 
             for symb in self.langage:
                 etats_atteignable = set()
@@ -261,22 +259,26 @@ class Automate(AutomateInterface, ABC):
                     if symb in self.transition.get(etat, {}):
                         etats_atteignable.update(self.transition[etat][symb])
 
-                if tuple(etats_atteignable) not in etats_traites:
-                    etats_a_traiter.append(etats_atteignable)
-                    etats_traites.add(tuple(etats_atteignable))
+                if etats_atteignable:
+                    if tuple(etats_atteignable) not in etats_traites:
+                        etats_a_traiter.append(etats_atteignable)
+                        etats_traites.add(tuple(etats_atteignable))
 
-                reformat_destinations = ''.join(sorted(etats_atteignable))
+                    reformat_destinations = ''.join(sorted(etats_atteignable))
 
-                cle_etat = ''.join(sorted(reformat_new_etat))
-                if cle_etat not in deterministe_automate.transition:
-                    deterministe_automate.transition[cle_etat] = {}
+                    cle_etat = reformat_new_etat
+                    if cle_etat not in deterministe_automate.transition:
+                        deterministe_automate.transition[cle_etat] = {}
 
-                deterministe_automate.transition[cle_etat][symb] = [reformat_destinations]
+                    # Évitez d'ajouter des destinations vides
+                    if reformat_destinations:
+                        deterministe_automate.transition[cle_etat][symb] = [reformat_destinations]
 
         # Transformer les états tuple en string pour l'affichage
         deterministe_automate.etat = [''.join(sorted(etat)) for etat in deterministe_automate.etat]
         deterministe_automate.entree = []
         deterministe_automate.sortie = []
+
         # Regarder si un état est un état d'entrée ou de sortie dans l'automate initial
         for etat in self.entree:
             for tuple_etat in deterministe_automate.etat:
@@ -288,21 +290,25 @@ class Automate(AutomateInterface, ABC):
                 if etat in tuple_etat:
                     if tuple_etat not in deterministe_automate.sortie:
                         deterministe_automate.sortie.append(tuple_etat)
-        print(deterministe_automate)
-        self.copier_automate(deterministe_automate)
-        for etat in self.etat:
-            if etat=="":
-                self.etat.remove(etat)
+
         self.deterministe = True
         print("L'automate a été déterminisé avec succès.")
 
-    def minimiser(self):
+    def est_minimal(self):
         """Minimise l'automate si nécessaire."""
         pass
 
-    def est_minimal(self):
+    def minimiser(self):
+        self.determiniser()
+        self.completer()
+        #print(self)
         # if not self.est_deterministe():
         # print("Erreur : L'automate doit être déterministe pour être minimal.")
+        automate_modifie = Automate()
+        automate_modifie.copier_automate(self)
+        automate_copie2 = Automate()
+        automate_copie2.copier_automate(self)
+
         et = []  # Etats terminaux
         ent = []  # Etats non terminaux
 
@@ -313,16 +319,13 @@ class Automate(AutomateInterface, ABC):
                 ent.append(etat)
         # print(et,ent)
 
-        automate_modifie = Automate()
-        automate_modifie.copier_automate(self)
-        automate_copie2 = Automate()
-        automate_copie2.copier_automate(self)
         temp = {}
 
         for etat in automate_modifie.etat:
             temp1 = automate_copie2.transition.get(etat, {})
             temp[etat] = dict(temp1)
 
+        # cree un automate copie de l'automate avec les etats terminaux et non terminaux
         for etat in automate_modifie.etat:
             for symbole in automate_modifie.langage:
                 destinations = automate_modifie.transition.get(etat, {}).get(symbole, [])
@@ -337,19 +340,20 @@ class Automate(AutomateInterface, ABC):
                 automate_modifie.transition[etat][symbole] = nouvelles_destinations
 
         motifs_transitions = {}
-
+        # Reunir les etats sortie qui ont le meme schéma de transition
         for etat_terminal in et:
             transitions_etat_terminal = automate_modifie.transition.get(etat_terminal, {})
             motif = ""
             for symbole, destinations in transitions_etat_terminal.items():
                 motif += "".join(destinations)
+
             if motif not in motifs_transitions:
                 motifs_transitions[motif] = [etat_terminal]
             else:
                 motifs_transitions[motif].append(etat_terminal)
 
         motifs_transitions2 = {}
-
+        # Reunir les autres etat qui ont le meme schéma de transition
         for etat_terminal in ent:
             transitions_etat_terminal = automate_modifie.transition.get(etat_terminal, {})
             motif = ""
@@ -359,8 +363,11 @@ class Automate(AutomateInterface, ABC):
                 motifs_transitions2[motif] = [etat_terminal]
             else:
                 motifs_transitions2[motif].append(etat_terminal)
-
-        motifs_transitions.update(motifs_transitions2)
+        for motif, etats in motifs_transitions2.items():
+            if motif not in motifs_transitions:
+                motifs_transitions[motif] = etats
+            else:
+                motifs_transitions[motif].extend(etats)
 
         transitions_avant_fusion = {}
         for etat, transitions in temp.items():
@@ -374,9 +381,7 @@ class Automate(AutomateInterface, ABC):
                             break
                 transitions_avant_fusion[etat][symbole] = groupes_destinations
 
-        # print(transitions_avant_fusion,"\n")
-        # print(motifs_transitions)
-
+        # Separer les groupes de motifs
         groupes_separes = {}
 
         for motif, etats_du_groupe in motifs_transitions.items():
@@ -384,10 +389,11 @@ class Automate(AutomateInterface, ABC):
             for etat in etats_du_groupe:
                 transitions_du_groupe[etat] = transitions_avant_fusion[etat]
 
-            # print(f"Transitions du groupe de motifs {motif} :",transitions_du_groupe)
+            # print(f"Transitions du groupe de motifs {motif} :", transitions_du_groupe)
 
             for etat, transitions_etat in transitions_du_groupe.items():
                 Similaire = False
+
                 for groupe, transitions_groupe in groupes_separes.items():
                     if transitions_avant_fusion[transitions_groupe[0]] == transitions_etat:
                         groupes_separes[groupe].append(etat)
@@ -395,8 +401,8 @@ class Automate(AutomateInterface, ABC):
                         break
                 if not Similaire:
                     groupes_separes[f"NewGroup{len(groupes_separes) + 1}"] = [etat]
-
-        # print("Groupes séparés :",groupes_separes)
+        #print("Groupes séparés :", groupes_separes)
+        # print("Groupes séparés :", groupes_separes)
         # for etat, transitions in temp.items():
         # print(etat,transitions)
         new_entree = []
@@ -409,12 +415,12 @@ class Automate(AutomateInterface, ABC):
                 transitions_etat = temp[etat]
 
                 for symbole, destinations in transitions_etat.items():
-                    # print(symbole,":",destinations)
+                    #print(symbole,":",destinations)
                     if symbole not in transitions_nouvel_etat:
                         transitions_nouvel_etat[symbole] = []
                     for destination in destinations:
-                        # print(":", destination)
-                        # print(transitions_nouvel_etat, "\n")
+                        #print(":", destination)
+                        #print(transitions_nouvel_etat, "\n")
                         if destination not in transitions_nouvel_etat[symbole]:
                             transitions_nouvel_etat[symbole].append(destination)
             # print(transitions_nouvel_etat, ":::")
@@ -430,7 +436,8 @@ class Automate(AutomateInterface, ABC):
                 if etat in self.entree:
                     new_entree.append(nouvel_etat)
                 if etat in self.sortie:
-                    new_sortie.append(nouvel_etat)
+                    if nouvel_etat not in new_sortie:
+                        new_sortie.append(nouvel_etat)
 
             for etat in etats:
                 if etat != nouvel_etat:
@@ -438,9 +445,14 @@ class Automate(AutomateInterface, ABC):
                     automate_copie2.etat.remove(etat)
                 else:
                     automate_copie2.etat.remove(nouvel_etat)
+        # Ajouter chaque transition pour chaque lettre dans un tableau
+
+        for etat, transitions_etat in automate_copie2.transition.items():
+            for symbole, destination in transitions_etat.items():
+                if not isinstance(destination, list):
+                    automate_copie2.transition[etat][symbole] = [destination]
 
         automate_copie2.entree = new_entree
         automate_copie2.sortie = new_sortie
 
-        print(automate_copie2)
-        automate_copie2.affichage_automate()
+        self.copier_automate(automate_copie2)

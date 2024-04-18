@@ -26,7 +26,7 @@ Fonctions :
 def definition(mot):
     """Donne la définition d'un mot
     :param mot: str
-    :return bool
+    : return bool
     """
     console = Console(color_system="auto")
     definitions = {
@@ -76,11 +76,9 @@ def recherche_mot():
         choix = input(">>> ").lower()
         if choix not in ["oui", "o", "yes", "y"]:
             return
-from rich.theme import Theme
 
 
 def afficher_code():
-
     """Affiche le code d'une fonction de la classe Automate
     :return:
     """

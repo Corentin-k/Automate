@@ -1,8 +1,6 @@
 from rich.progress import track
 import time
 import os
-from rich.console import Console
-from rich.table import Table
 from dico import *
 from automate import *
 
@@ -90,30 +88,30 @@ def menu():
     elif choix == "4" or choix == "open":
 
         automate = Automate(fichier())
-        if automate.verif:
-            automate.affichage_automate()
-            automate.completer()
-            if automate.est_deterministe() == True:
-                print("L'automate est déterministe")
-            else:
-                print("L'automate n'est pas déterministe")
-            automate.determiniser()
+        # if automate.verif:
+        #     automate.affichage_automate()
+        #     automate.completer()
+        #     if automate.est_deterministe():
+        #         print("L'automate est déterministe")
+        #     else:
+        #         print("L'automate n'est pas déterministe")
+        #     automate.determiniser()
+        #
+        #     automate.affichage_automate()
+        #     automate.standardiser()
+        #     if automate.est_deterministe():
+        #         print("L'automate est déterministe")
+        #     else:
+        #         print("L'automate n'est pas déterministe")
+        #     if automate.est_standard():
+        #         print("L'automate est standard")
+        #     else:
+        #         print("L'automate n'est pas standard")
+        # else:
+        #     print("Erreur dans la construction de l'automate")
+        #     print("Regarder la structure dans le fichier automate-exemple.txt")
 
-            automate.affichage_automate()
-            automate.standardiser()
-            if automate.est_deterministe() == True:
-                print("L'automate est déterministe")
-            else:
-                print("L'automate n'est pas déterministe")
-            if automate.est_standard() == True:
-                print("L'automate est standard")
-            else:
-                print("L'automate n'est pas standard")
-        else:
-            print("Erreur dans la construction de l'automate")
-            print("Regarder la structure dans le fichier automate-exemple.txt")
-
-        automate.est_minimal()
+        automate.minimiser()
         automate.affichage_automate()
 
     elif choix == "5" or choix == "credit":
@@ -125,4 +123,3 @@ def menu():
         menu()
     else:
         console.print("Option invalide.", style="bold red")
-
