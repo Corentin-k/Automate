@@ -240,13 +240,13 @@ class Automate(AutomateInterface, ABC):
         if self.deterministe or self.est_deterministe():
             print("Erreur : L'automate est déjà déterministe.")
             return
-
+        print("Déterminisation de l'automate")
         deterministe_automate = Automate()
         deterministe_automate.langage = self.langage
 
         etats_a_traiter = [set(self.entree)]
         etats_traites = set()
-
+        deterministe_automate.entree=''.join(sorted(self.entree))
         while etats_a_traiter:
             new_etat = etats_a_traiter.pop(0)
             etats_traites.add(tuple(new_etat))
@@ -278,22 +278,19 @@ class Automate(AutomateInterface, ABC):
 
         # Transformer les états tuple en string pour l'affichage
         deterministe_automate.etat = [''.join(sorted(etat)) for etat in deterministe_automate.etat]
-        deterministe_automate.entree = []
+
         deterministe_automate.sortie = []
 
         # Regarder si un état est un état d'entrée ou de sortie dans l'automate initial
-        for etat in self.entree:
-            for tuple_etat in deterministe_automate.etat:
-                if etat in tuple_etat:
-                    if tuple_etat not in deterministe_automate.entree:
-                        deterministe_automate.entree.append(tuple_etat)
+
         for etat in self.sortie:
             for tuple_etat in deterministe_automate.etat:
                 if etat in tuple_etat:
                     if tuple_etat not in deterministe_automate.sortie:
                         deterministe_automate.sortie.append(tuple_etat)
-
+        self.copier_automate(deterministe_automate)
         self.deterministe = True
+
         print("L'automate a été déterminisé avec succès.")
 
     def est_minimal(self):
@@ -460,7 +457,7 @@ class Automate(AutomateInterface, ABC):
 
         self.copier_automate(automate_copie2)
 
-    def complémentaire(self):
+    def complementaire(self):
         """Calcule l'automate complémentaire."""
         print("Automate complémentaire")
         automate_complementaire = Automate()
