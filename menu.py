@@ -41,7 +41,7 @@ def fichier():
     def sort_by_number(filename):
         # Extraire le numéro du nom de fichier en supprimant le préfixe "automate-" et le suffixe ".txt"
         try:
-            number = int(filename.replace("automate-", "").replace(".txt", ""))
+            number = int(filename.replace("B05-", "").replace(".txt", ""))
             return number
         except ValueError:
             # Si la conversion échoue, retourner un grand nombre pour ignorer le fichier dans le tri
@@ -49,7 +49,7 @@ def fichier():
 
     # Récupérer les fichiers et les trier
     files = [fichier_ for fichier_ in os.listdir(dossier_programme) if
-             fichier_.endswith(".txt") and fichier_.startswith("automate")]
+             fichier_.endswith(".txt") and fichier_.startswith("B05")]
 
     # Trier les fichiers par numéro, ou les ignorer si le numéro est invalide
     files.sort(key=sort_by_number)
