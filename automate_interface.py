@@ -1,9 +1,9 @@
-
 from abc import ABC, abstractmethod
 
 
 class AutomateInterface(ABC):
     """Interface de base pour les automates-test."""
+
     @abstractmethod
     def copier_automate(self, autre_automate):
         """Copie un automate."""
@@ -52,4 +52,14 @@ class AutomateInterface(ABC):
     @abstractmethod
     def affichage_automate(self):
         """Affiche l'automate."""
+        pass
+
+    @abstractmethod
+    def complementaire(self):
+        """Affiche le complémentaire de l'automate"""
+        pass
+
+    @abstractmethod
+    def mot_accepte(self, mot: str):
+        """Détermine si un mot est accepté par l'automate."""
         pass
