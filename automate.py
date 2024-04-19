@@ -290,7 +290,7 @@ class Automate(AutomateInterface, ABC):
                         deterministe_automate.sortie.append(tuple_etat)
         self.copier_automate(deterministe_automate)
         self.deterministe = True
-
+        self.affichage_automate()
         print("L'automate a été déterminisé avec succès.")
 
     def est_minimal(self):
@@ -470,4 +470,44 @@ class Automate(AutomateInterface, ABC):
 
         automate_complementaire.sortie = nouveaux_etats_finaux
         automate_complementaire.affichage_automate()
+
+    def mot_accepte(self, mot: str):
+        """Détermine si un mot est accepté par l'automate."""
+        # Initialiser une liste avec l'état d'entrée initial
+        etats_a_explorer = [self.entree]
+
+        # Pour chaque symbole dans le mot
+        for symbole in mot:
+            # Nouvelle liste pour les états à explorer pour le prochain symbole
+            nouveaux_etats = []
+
+            # Parcourez tous les états actuels dans la liste
+            while etats_a_explorer:
+                # Obtenez l'état courant de la liste
+                etat_courant = etats_a_explorer.pop(0)
+                if isinstance(etat_courant, list) and len(etat_courant) == 1:
+                    etat_courant = etat_courant[0]
+                # Obtenez les transitions possibles pour l'état courant et le symbole
+                transitions_possibles = self.transition.get(etat_courant, {}).get(symbole, [])
+
+                # Ajoutez toutes les transitions possibles à la nouvelle liste d'états
+                for etat_prochain in transitions_possibles:
+                    # Assurez-vous d'ajouter chaque nouvel état à la liste sans duplication
+                    if etat_prochain not in nouveaux_etats:
+                        nouveaux_etats.append(etat_prochain)
+
+            # Mettre à jour la liste des états à explorer avec les nouveaux états
+            etats_a_explorer = nouveaux_etats
+
+            # Si la liste est vide, cela signifie que le mot n'est pas accepté
+            if not etats_a_explorer:
+                return False
+
+        # Vérifiez si l'un des états courants est un état de sortie de l'automate
+        for etat in etats_a_explorer:
+            if etat in self.sortie:
+                return True
+
+        # Si aucun état courant n'est un état de sortie, le mot n'est pas accepté
+        return False
 
