@@ -1,0 +1,12 @@
+Etat={0,1,2,3,4,5}
+Langage={a}
+Entree={1}
+Sortie={0,3}
+Transition=
+0: a 4
+1: a 2,4
+2: a 3
+3: a 2
+4: a 5
+5: a 0
+

@@ -1,0 +1,10 @@
+Etat={0,1,2,3,4}
+Langage={a,b,c,d}
+Entree={1}
+Sortie={0}
+Transition=
+0: d 0
+1: a 2
+2: a 2; b 3
+3: b 3; c 4
+4: c 4; d 0

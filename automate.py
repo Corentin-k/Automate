@@ -110,7 +110,8 @@ class Automate(AutomateInterface, ABC):
             transitions = {}
             for lettre in self.langage:
                 transition = self.transition.get(etat, {}).get(lettre, [])
-                transitions[lettre] = ','.join(transition) if transition else ""
+                transitions[lettre] = ','.join(str(item) for item in transition) if transition else ""
+
             # Type entre ou sortie
 
             if etat in self.entree:
@@ -122,6 +123,7 @@ class Automate(AutomateInterface, ABC):
                 type_etat = "[red]S[/red]"
             else:
                 type_etat = ""
+
             table.add_row(type_etat, etat, *transitions.values())
 
         console.print(table)
@@ -301,11 +303,10 @@ class Automate(AutomateInterface, ABC):
     def minimiser(self):
         self.determiniser()
         self.completer()
-        #print(self)
-        # if not self.est_deterministe():
-        # print("Erreur : L'automate doit être déterministe pour être minimal.")
+        self.affichage_automate()
         automate_modifie = Automate()
         automate_modifie.copier_automate(self)
+
         automate_copie2 = Automate()
         automate_copie2.copier_automate(self)
 
@@ -340,17 +341,20 @@ class Automate(AutomateInterface, ABC):
                 automate_modifie.transition[etat][symbole] = nouvelles_destinations
 
         motifs_transitions = {}
+
         # Reunir les etats sortie qui ont le meme schéma de transition
         for etat_terminal in et:
             transitions_etat_terminal = automate_modifie.transition.get(etat_terminal, {})
             motif = ""
             for symbole, destinations in transitions_etat_terminal.items():
                 motif += "".join(destinations)
-
+            motif = "T" + motif
             if motif not in motifs_transitions:
                 motifs_transitions[motif] = [etat_terminal]
             else:
                 motifs_transitions[motif].append(etat_terminal)
+
+        print(motifs_transitions)
 
         motifs_transitions2 = {}
         # Reunir les autres etat qui ont le meme schéma de transition
@@ -359,16 +363,14 @@ class Automate(AutomateInterface, ABC):
             motif = ""
             for symbole, destinations in transitions_etat_terminal.items():
                 motif += "".join(destinations)
+            motif = "NT" + motif
             if motif not in motifs_transitions2:
                 motifs_transitions2[motif] = [etat_terminal]
             else:
                 motifs_transitions2[motif].append(etat_terminal)
-        for motif, etats in motifs_transitions2.items():
-            if motif not in motifs_transitions:
-                motifs_transitions[motif] = etats
-            else:
-                motifs_transitions[motif].extend(etats)
 
+        motifs_transitions.update(motifs_transitions2)
+        print(motifs_transitions)
         transitions_avant_fusion = {}
         for etat, transitions in temp.items():
             transitions_avant_fusion[etat] = {}
@@ -427,7 +429,6 @@ class Automate(AutomateInterface, ABC):
             for symbole, destinations in transitions_nouvel_etat.items():
                 # print(symbole,destinations)
                 transitions_nouvel_etat[symbole] = "".join(sorted(list(set(destinations))))
-            # print(transitions_etat)
 
             automate_copie2.etat.append(nouvel_etat)
             automate_copie2.transition[nouvel_etat] = transitions_nouvel_etat
@@ -449,10 +450,27 @@ class Automate(AutomateInterface, ABC):
 
         for etat, transitions_etat in automate_copie2.transition.items():
             for symbole, destination in transitions_etat.items():
-                if not isinstance(destination, list):
+               if not isinstance(destination, list):
                     automate_copie2.transition[etat][symbole] = [destination]
+
+        print(automate_copie2)
 
         automate_copie2.entree = new_entree
         automate_copie2.sortie = new_sortie
 
         self.copier_automate(automate_copie2)
+
+    def complémentaire(self):
+        """Calcule l'automate complémentaire."""
+        print("Automate complémentaire")
+        automate_complementaire = Automate()
+        automate_complementaire.copier_automate(self)
+        nouveaux_etats_finaux = []
+
+        for etat in automate_complementaire.etat:
+            if etat not in automate_complementaire.sortie:
+                nouveaux_etats_finaux.append(etat)
+
+        automate_complementaire.sortie = nouveaux_etats_finaux
+        automate_complementaire.affichage_automate()
+
