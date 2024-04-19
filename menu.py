@@ -36,20 +36,39 @@ def fichier():
     print(dossier_programme)
     fichiers = []
     tree = Tree("Fichier")
-    for fichier_ in track(os.listdir(dossier_programme), description="Recupération des fichiers..."):
-        if fichier_.endswith(".txt") and fichier_.startswith("automate"):
-            fichiers.append(fichier_)
-            tree.add(fichier_)
-            time.sleep(0)
-            os.system('cls' if os.name == 'nt' else 'clear')
-            print(tree)
 
-    print("\nQuel automate voulez vous choisir ?\n")
+    # Définir la fonction de tri par numéro
+    def sort_by_number(filename):
+        # Extraire le numéro du nom de fichier en supprimant le préfixe "automate-" et le suffixe ".txt"
+        try:
+            number = int(filename.replace("automate-", "").replace(".txt", ""))
+            return number
+        except ValueError:
+            # Si la conversion échoue, retourner un grand nombre pour ignorer le fichier dans le tri
+            return float('inf')
+
+    # Récupérer les fichiers et les trier
+    files = [fichier_ for fichier_ in os.listdir(dossier_programme) if
+             fichier_.endswith(".txt") and fichier_.startswith("automate")]
+
+    # Trier les fichiers par numéro, ou les ignorer si le numéro est invalide
+    files.sort(key=sort_by_number)
+
+    # Ajouter les fichiers triés à l'arbre et les afficher
+    for fichier_ in track(files, description="Recupération des fichiers..."):
+        fichiers.append(fichier_)
+        tree.add(fichier_)
+        time.sleep(0)
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print(tree)
+
+    print("\nQuel automate voulez-vous choisir ?\n")
     choix = int(input(">>>"))
     if choix == 0:
         return None
 
-    return dossier_programme + "\\" + fichiers[choix - 1]
+    # Retourner le chemin complet du fichier choisi
+    return os.path.join(dossier_programme, fichiers[choix - 1])
 
 
 def afficher_menu():
@@ -76,7 +95,6 @@ def afficher_menu():
 
 
 def menu():
-
     choix = input(">>>").lower()
 
     if choix == "1" or choix == "voir":
@@ -110,6 +128,7 @@ def menu():
         # else:
         #     print("Erreur dans la construction de l'automate")
         #     print("Regarder la structure dans le fichier automate-exemple.txt")
+        automate.affichage_automate()
 
         automate.minimiser()
         automate.affichage_automate()
