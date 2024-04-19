@@ -129,10 +129,10 @@ def menu():
         #     print("Erreur dans la construction de l'automate")
         #     print("Regarder la structure dans le fichier automate-exemple.txt")
         automate.affichage_automate()
-
+        print("mot accepter :",automate.mot_accepte("ad"))
         automate.minimiser()
         automate.affichage_automate()
-
+        print("mot accepter :", automate.mot_accepte("ad"))
     elif choix == "5" or choix == "credit":
         print_credit()
     elif choix == "6" or choix == "quit":
