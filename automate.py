@@ -499,15 +499,16 @@ class Automate(AutomateInterface, ABC):
         for symbole in mot:
             # Nouvelle liste pour les états à explorer pour le prochain symbole
             nouveaux_etats = []
-
+            transitions_possibles = []
             # Parcourez tous les états actuels dans la liste
             while etats_a_explorer:
                 # Obtenez l'état courant de la liste
                 etat_courant = etats_a_explorer.pop(0)
                 if isinstance(etat_courant, list) and len(etat_courant) == 1:
                     etat_courant = etat_courant[0]
-                # Obtenez les transitions possibles pour l'état courant et le symbole
-                transitions_possibles = self.transition.get(etat_courant, {}).get(symbole, [])
+
+                for etat in etat_courant:
+                    transitions_possibles +=self.transition.get(etat, {}).get(symbole, [])
 
                 # Ajoutez toutes les transitions possibles à la nouvelle liste d'états
                 for etat_prochain in transitions_possibles:
