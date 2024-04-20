@@ -62,12 +62,13 @@ def fichier():
         os.system('cls' if os.name == 'nt' else 'clear')
         print(tree)
 
-    print("\nQuel automate voulez-vous choisir ?\n")
+    print("\nQuel automate voulez-vous choisir ?")
     choix = int(input(">>>"))
     if choix == 0:
         return None
 
     # Retourner le chemin complet du fichier choisi
+    print("\nVous avez choisi l'automate : " + fichiers[choix - 1])
     return os.path.join(dossier_programme, fichiers[choix - 1])
 
 
@@ -135,11 +136,13 @@ def menu():
             choix_ouvrir = input("    >>>").lower()
             if choix_ouvrir in ['oui', 'o', 'yes', 'y']:
                 automate = Automate(fichier())
+                automate.affichage_automate()
             else:
                 console.print("Vous avez choisi de conserver l'automate actuel.", style="bold green")
                 automate.affichage_automate()
         else:
             automate = Automate(fichier())
+            automate.affichage_automate()
 
     elif choix in ["5", "crédits"]:
         print_credit()
