@@ -139,7 +139,10 @@ class Automate(AutomateInterface, ABC):
 
     def completer(self):
         if self.complet:
-            print("Deja complet")
+            print("Erreur : L'automate est déjà complet.")
+            return
+        if self.est_complet():
+            print("Erreur : L'automate est déjà complet.")
             return
         if self.deterministe is None:
             print("Voulez vous determiniser l'automate ?")
