@@ -63,9 +63,16 @@ def fichier():
         print(tree)
 
     print("\nQuel automate voulez-vous choisir ?")
-    choix = int(input(">>>"))
-    if choix == 0:
-        return None
+    while True:
+        try :
+            choix = int(input(">>>"))
+            if choix not in range(1, 30) and choix not in range(36, 44):
+                raise ValueError
+            else:
+                break
+        except ValueError:
+            console.print("\n[red]Erreur:[/red] Veuillez entrer un nombre valide entre 1 et 30 ou entre 36 et 44.")
+        print("\nQuel automate voulez-vous choisir ?")
 
     # Retourner le chemin complet du fichier choisi
     print("\nVous avez choisi l'automate : " + fichiers[choix - 1])
