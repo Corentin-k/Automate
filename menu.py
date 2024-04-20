@@ -4,6 +4,7 @@ import os
 from dico import *
 from automate import *
 from rich.console import Console
+
 # Lien vers la documentation de la fonction os.listdir
 # https://python.readthedocs.io/en/stable/library/os.html#os.listdir
 
@@ -11,22 +12,30 @@ console = Console(color_system="auto")
 
 
 def print_help():
-    console.print("Le programme permet d'analyser les automates-test")
+    console.print("\nBienvenue dans l'aide du programme !")
+    console.print("\nLe programme permet d'analyser des automates.")
     console.print("Il peut analyser un automate pour déterminer s'il est [underline]déterministe[/underline], "
-                  "[underline]standardisé[/underline], [underline]complet[/underline] ou [underline]minimisé"
+                  "[underline]standardisé[/underline], [underline]complet[/underline], ou [underline]minimisé"
                   "[/underline].")
-    console.print("Pour analyser un automate, placez-le dans un fichier .txt avec le format spécifié.")
-    console.print("Veillez à placer le fichier dans le même dossier que le programme Python ou à spécifier le chemin "
-                  "du fichier.")
+    console.print("Il peut également déterminer si un mot est accepté par l'automate et donner le complémentaire d'un "
+                  "automate.")
+    console.print(
+        "Pour plus d'informations, veuillez consulter le [blue][link=https://github.com/Corentin-k/Automate]README.md[/link][/blue]."
+    )
+    console.print("Ou si vous voulez plus d'information sur les automates finis, veuillez consulter le lien suivant : "
+                  "[blue][link=https://github.com/Corentin-k/Automate/wiki]Wiki[/link][/blue]")
+    console.print("\nPour afficher le menu et voir les action possible, tapez [purple]menu[/purple].\n")
+
+
 
 
 def print_credit():
     console.print("[red]Ce projet a été réalisé par : [/red]")
-    console.print("Corentin KERVAGORET")
-    console.print("_____")
-    console.print("_____")
-    console.print("_____")
-
+    console.print("    Corentin KERVAGORET")
+    console.print("    Henri Su")
+    console.print("    Gabriel TANNOUS")
+    console.print("    Vidjay VELAYOUDAM")
+    console.print("    Hippolyte Vallata")
     console.print("Dans le cadre du cours de Automates finis et expression relationnelles en L2 à l'Efrei")
     console.print("@2024")
 
@@ -64,9 +73,9 @@ def fichier():
 
     print("\nQuel automate voulez-vous choisir ?")
     while True:
-        try :
+        try:
             choix = int(input(">>>"))
-            if choix not in range(1, 30) and choix not in range(36, 44):
+            if choix not in range(1, 31) and choix not in range(36, 45):
                 raise ValueError
             else:
                 break
@@ -75,8 +84,8 @@ def fichier():
         print("\nQuel automate voulez-vous choisir ?")
 
     # Retourner le chemin complet du fichier choisi
-    print("\nVous avez choisi l'automate : " + fichiers[choix - 1])
-    return os.path.join(dossier_programme, fichiers[choix - 1])
+    print("\nVous avez choisi l'automate : " + f"B05-" + str(choix) + ".txt")
+    return os.path.join(dossier_programme, "B05-" + str(choix) + ".txt")
 
 
 def afficher_menu():
@@ -102,8 +111,10 @@ def afficher_menu():
         ("10", "standardiser", "[bold green]Actions sur un automate :[/bold green] Standardiser l'automate"),
         ("11", "minimiser", "[bold green]Actions sur un automate :[/bold green] Minimiser l'automate"),
         ("12", "compléter", "[bold green]Actions sur un automate :[/bold green] Compléter l'automate"),
-        ("13", "complementaire", "[bold green]Actions sur un automate :[/bold green] Afficher le complémentaire de l'automate"),
-        ("14", "mot_accepte", "[bold green]Actions sur un automate :[/bold green] Vérifier si un mot est accepté par l'automate")
+        ("13", "complementaire",
+         "[bold green]Actions sur un automate :[/bold green] Afficher le complémentaire de l'automate"),
+        ("14", "mot_accepte",
+         "[bold green]Actions sur un automate :[/bold green] Vérifier si un mot est accepté par l'automate")
     ]
 
     # Ajoutez chaque option à la table
@@ -112,13 +123,14 @@ def afficher_menu():
 
     # Affichez la table
     console.print(table)
-    console.print("Choisissez une option :", style="bold")
+
+
 automate = None  # Variable globale pour stocker l'automate
 
 
 def menu():
     global automate
-
+    console.print("\n[dim]Taper help/menu si vous avez besoin d'aide sinon tapez votre commande :[/dim]")
     choix = input(">>>").lower()
     liste_action = [
         "8", "affichage",
@@ -135,12 +147,13 @@ def menu():
         afficher_code()
     elif choix in ["2", "def"]:
         recherche_mot()
-    elif choix in ["3", "aide"]:
+    elif choix in ["3", "help"]:
         print_help()
     elif choix in ["4", "ouvrir"]:
         # Mettre à jour l'automate avec un nouvel automate
         if automate is not None:
-            console.print("\nAttention : Un automate est déjà ouvert. Voulez-vous en ouvrir un autre ?", style="bold yellow")
+            console.print("\nAttention : Un automate est déjà ouvert. Voulez-vous en ouvrir un autre ?",
+                          style="bold yellow")
             choix_ouvrir = input("    >>>").lower()
             if choix_ouvrir in ['oui', 'o', 'yes', 'y']:
                 automate = Automate(fichier())
@@ -152,9 +165,9 @@ def menu():
             automate = Automate(fichier())
             automate.affichage_automate()
 
-    elif choix in ["5", "crédits"]:
+    elif choix in ["5", "credits"]:
         print_credit()
-    elif choix in ["6", "quitter"]:
+    elif choix in ["6", "quitter","quit"]:
         console.print("Au revoir !", style="bold green")
         quit()
     elif choix in ["7", "menu"]:
@@ -188,17 +201,17 @@ def menu():
         elif choix in ["15", "test"]:
             # Test de l'automate
             automate.fonction_test()
-            type=""
+            type = ""
             if automate.complet:
-                type+="complet "
+                type += "complet "
             if automate.deterministe:
-                type+="déterministe "
+                type += "déterministe "
             if automate.standard:
-                type+="standard "
+                type += "standard "
             if automate.minimal:
-                type+="minimal "
+                type += "minimal "
 
-            automate.affichage_automate("Automate "+type)
+            automate.affichage_automate("Automate " + type)
         else:
             console.print("Option invalide ou l'automate n'est pas ouvert actuellement.", style="bold red")
     elif automate is None and choix in liste_action:
