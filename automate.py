@@ -9,6 +9,8 @@ from rich.table import Table
 from automate_interface import AutomateInterface
 
 console = Console(color_system="windows")
+
+
 class Automate(AutomateInterface, ABC):
     """Classe Automate qui permet de créer un automate à partir d'un fichier texte
     et de le manipuler
@@ -96,7 +98,7 @@ class Automate(AutomateInterface, ABC):
         affichage += f" Standard : {self.standard}, Deterministe : {self.deterministe}, Minimal : {self.minimal}"
         return affichage
 
-    def affichage_automate(self,titre="Automate"):
+    def affichage_automate(self, titre="Automate"):
 
         table = Table(title=titre, show_lines=True)
         table.add_column("[green]Entré[/green]/[red]Sortie[/red]", justify="left", style="cyan")
@@ -132,33 +134,33 @@ class Automate(AutomateInterface, ABC):
         for etat in self.etat:
             for lettre in self.langage:
                 if not self.transition.get(etat, {}).get(lettre, []):
-                    self.complet = False
                     return False
-        self.complet = True
         return True
 
     def completer(self):
-        automate_complet = Automate()
-        automate_complet.copier_automate(self)
         if self.complet:
             console.print("[red]Erreur[/red] L'automate est déjà complet.\n")
             self.affichage_automate("Automate Complet et Déterministe")
             return
+
         if self.est_complet():
             console.print("[red]Erreur[/red] L'automate est déjà complet.")
             return
-        elif not self.deterministe or not self.est_deterministe():
-            console.print("[red]Erreur[/red] : L'automate doit être déterministe pour être completé.")
-            print("Voulez vous determiniser l'automate ?")
+
+            # Créer une copie de l'automate pour le compléter
+        automate_complet = Automate()
+        automate_complet.copier_automate(self)
+
+        if not self.deterministe or not self.est_deterministe():
+            console.print("[red]Erreur[/red] : L'automate doit être déterministe pour être complété.")
+            print("Voulez-vous déterminiser l'automate ?")
             choix = input(">>>")
             if choix in ["oui", "o", "yes", "y"]:
-                automate_complet=automate_complet.determiniser()
+                automate_complet = automate_complet.determiniser()
             else:
                 console.print("[red]Erreur[/red] : L'automate doit être non déterministe pour être complété.")
                 return
 
-        automate_complet = Automate()
-        automate_complet.copier_automate(self)
         for etat in automate_complet.etat:
             for lettre in automate_complet.langage:
                 if not automate_complet.transition.get(etat, {}).get(lettre, []):
@@ -174,7 +176,6 @@ class Automate(AutomateInterface, ABC):
 
     def est_standard(self):
         if len(self.entree) >= 2:
-            self.standard = False
             console.print("\n[yellow]: L'automate n'est pas standard: Il y a plus d'un état d'entrée.[/yellow]\n")
             return False
         else:
@@ -182,17 +183,16 @@ class Automate(AutomateInterface, ABC):
             for etat in self.etat:
                 for lettre in self.langage:
                     if self.entree[0] in self.transition.get(etat, {}).get(lettre, []):
-                        self.standard = False
-                        console.print("\n[yellow]L'automate n'est pas standard: Un état renvoie vers l'état d'entrée.[/yellow]\n")
+                        console.print(
+                            "\n[yellow]L'automate n'est pas standard: Un état renvoie vers l'état d'entrée.[/yellow]\n")
                         return False
-            self.standard = True
             return True
 
     def standardiser(self):
         if self.standard or self.est_standard():
             console.print("[green]Déjà standard[/green]")
             return
-        automate_standardiser= Automate()
+        automate_standardiser = Automate()
         automate_standardiser.copier_automate(self)
         automate_standardiser.etat.append("i")
         # Création des transitions sortantes du nouvel état initial
@@ -229,10 +229,8 @@ class Automate(AutomateInterface, ABC):
             for etat in self.etat:
                 for lettre in self.langage:
                     if len(self.transition.get(etat, {}).get(lettre, [])) > 1:
-                        self.deterministe = False
                         return False
             bool1 = True
-        self.deterministe = bool1
         return bool1
 
     def copier_automate(self, autre_automate):
@@ -466,7 +464,7 @@ class Automate(AutomateInterface, ABC):
 
         for etat, transitions_etat in automate_copie2.transition.items():
             for symbole, destination in transitions_etat.items():
-               if not isinstance(destination, list):
+                if not isinstance(destination, list):
                     automate_copie2.transition[etat][symbole] = [destination]
 
         automate_copie2.entree = new_entree
@@ -508,7 +506,7 @@ class Automate(AutomateInterface, ABC):
                     etat_courant = etat_courant[0]
 
                 for etat in etat_courant:
-                    transitions_possibles +=self.transition.get(etat, {}).get(symbole, [])
+                    transitions_possibles += self.transition.get(etat, {}).get(symbole, [])
 
                 # Ajoutez toutes les transitions possibles à la nouvelle liste d'états
                 for etat_prochain in transitions_possibles:
@@ -532,9 +530,23 @@ class Automate(AutomateInterface, ABC):
         return False
 
     def fonction_test(self):
-        self.est_standard()
-        self.est_complet()
-        self.est_deterministe()
-        self.est_minimal()
+        type = ""
+        if self.est_standard():
+            print("L'automate est standard")
+            self.standard = True
+            type += "standard "
 
+        if self.est_complet():
+            print("L'automate est complet")
+            type += "complet "
+            self.complet = True
+        if self.est_deterministe():
+            print("L'automate est deterministe")
+            self.deterministe = True
+            type += "déterministe "
+        if self.est_minimal():
+            print("L'automate est minimal")
+            self.minimal = True
+            type += "minimal "
 
+        self.affichage_automate("Automate " + type)

@@ -24,7 +24,7 @@ def print_help():
     )
     console.print("Ou si vous voulez plus d'information sur les automates finis, veuillez consulter le lien suivant : "
                   "[blue][link=https://github.com/Corentin-k/Automate/wiki]Wiki[/link][/blue]")
-    console.print("\nPour afficher le menu et voir les action possible, tapez [purple]menu[/purple].\n")
+    console.print("\nPour afficher le menu et voir les actions possibles, tapez [purple]menu[/purple].\n")
 
 
 
@@ -201,17 +201,6 @@ def menu():
         elif choix in ["15", "test"]:
             # Test de l'automate
             automate.fonction_test()
-            type = ""
-            if automate.complet:
-                type += "complet "
-            if automate.deterministe:
-                type += "déterministe "
-            if automate.standard:
-                type += "standard "
-            if automate.minimal:
-                type += "minimal "
-
-            automate.affichage_automate("Automate " + type)
         else:
             console.print("Option invalide ou l'automate n'est pas ouvert actuellement.", style="bold red")
     elif automate is None and choix in liste_action:
