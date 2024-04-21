@@ -2,6 +2,10 @@
 
 ## Contributeurs
 - [Corentin KERVAGORET](https://github.com/Corentin-k)
+- Henri Su
+- Gabriel TANNOUS
+- Vidjay VELAYOUDAM
+- Hippolyte Vallata
 
 ## Informations
 - Projet réalisé dans le cadre de l'UE "Automates et expressions relationnelles" au semestre 4 de la L2 à L'EFREI Paris.
@@ -50,4 +54,6 @@ Transition=    # Lister toutes les transitions
 ```
 
 ## License
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](
+Ce projet est sous licence MIT. Voir le fichier [LICENSE](https://github.com/Corentin-k/Automate?tab=MIT-1-ov-file) pour plus d'informations.
+
+```
