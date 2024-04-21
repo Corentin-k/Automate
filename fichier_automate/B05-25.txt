@@ -3,7 +3,6 @@ Langage={a,b,c,d}
 Entree={1}
 Sortie={0}
 Transition=
-0: d 0
 1: a 1,2 ; b 3; c 4; d 0
 2: b 2,3; c 4; d 0
 3: c 3,4 ; d 0
