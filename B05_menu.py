@@ -1,8 +1,8 @@
 from rich.progress import track
 import time
 import os
-from dico import *
-from automate import *
+from B05_dico import *
+from B05_automate import *
 from rich.console import Console
 
 # Lien vers la documentation de la fonction os.listdir

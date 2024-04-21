@@ -1,7 +1,6 @@
 from abc import ABC
 from rich.console import Console
 from rich.table import Table
-from collections import OrderedDict
 
 # Lien vers la documentation de la fonction os.listdir
 # https://rich.readthedocs.io/en/stable/tree.html

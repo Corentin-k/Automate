@@ -3,14 +3,14 @@ from rich import print  # pip install rich
 from rich.syntax import Syntax
 from rich.tree import Tree
 
-from automate import *
+from B05_automate import *
 
 # Lien vers la documentation de la fonction inspect
 # https://docs.python.org/3/library/inspect.html#inspect.getsource
 
 
 """
-Fichier B05-dico.py
+Fichier B05_dico.py
 Ce fichier contient des fonctions pour afficher le code d'une fonction de la classe Automate et pour rechercher un mot
 dans un dictionnaire.
 
