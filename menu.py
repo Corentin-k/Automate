@@ -20,13 +20,12 @@ def print_help():
     console.print("Il peut également déterminer si un mot est accepté par l'automate et donner le complémentaire d'un "
                   "automate.")
     console.print(
-        "Pour plus d'informations, veuillez consulter le [blue][link=https://github.com/Corentin-k/Automate]README.md[/link][/blue]."
+        "Pour plus d'informations, veuillez consulter le [blue]["
+        "link=https://github.com/Corentin-k/Automate]README.md[/link][/blue]."
     )
     console.print("Ou si vous voulez plus d'information sur les automates finis, veuillez consulter le lien suivant : "
                   "[blue][link=https://github.com/Corentin-k/Automate/wiki]Wiki[/link][/blue]")
     console.print("\nPour afficher le menu et voir les actions possibles, tapez [purple]menu[/purple].\n")
-
-
 
 
 def print_credit():
@@ -114,7 +113,12 @@ def afficher_menu():
         ("13", "complementaire",
          "[bold green]Actions sur un automate :[/bold green] Afficher le complémentaire de l'automate"),
         ("14", "mot_accepte",
-         "[bold green]Actions sur un automate :[/bold green] Vérifier si un mot est accepté par l'automate")
+         "[bold green]Actions sur un automate :[/bold green] Vérifier si un mot est accepté par l'automate"),
+        ("15", "est_deterministe", "[bold green]Actions sur un automate :[/bold green] Vérifier si l'automate est "
+                                   "déterministe"),
+        ("16", "est_standard", "[bold green]Actions sur un automate :[/bold green] Vérifier si l'automate est standard"),
+        ("17", "est_complet", "[bold green]Actions sur un automate :[/bold green] Vérifier si l'automate est complet"),
+        ("18", "est_minimal", "[bold green]Actions sur un automate :[/bold green] Vérifier si l'automate est minimal"),
     ]
 
     # Ajoutez chaque option à la table
@@ -140,7 +144,11 @@ def menu():
         "12", "compléter",
         "13", "complementaire",
         "14", "mot_accepte",
-        "15", "test",
+        "15", "est_deterministe",
+        "16", "est_standard",
+        "17", "est_complet",
+        "18", "est_minimal",
+        "18", "test",
     ]
 
     if choix in ["1", "voir"]:
@@ -167,7 +175,7 @@ def menu():
 
     elif choix in ["5", "credits"]:
         print_credit()
-    elif choix in ["6", "quitter","quit"]:
+    elif choix in ["6", "quitter", "quit"]:
         console.print("Au revoir !", style="bold green")
         quit()
     elif choix in ["7", "menu"]:
@@ -198,7 +206,30 @@ def menu():
                 console.print(f"Le mot '{mot}' est accepté par l'automate.", style="bold green")
             else:
                 console.print(f"Le mot '{mot}' n'est pas accepté par l'automate.", style="bold red")
-        elif choix in ["15", "test"]:
+        elif choix in ["15", "est_deterministe"]:
+            # Vérifier si l'automate est déterministe
+            deterministe = automate.est_deterministe(True)
+            if deterministe:
+                console.print("L'automate est déterministe.", style="bold green")
+        elif choix in ["16", "est_standard"]:
+            # Vérifier si l'automate est standard
+            standard = automate.est_standard()
+            if standard:
+                console.print("L'automate est standard.", style="bold green")
+        elif choix in ["17", "est_complet"]:
+            # Vérifier si l'automate est complet
+            complet = automate.est_complet(True)
+            if complet:
+                console.print("L'automate est complet.", style="bold green")
+        elif choix in ["18", "est_minimal"]:
+            # Vérifier si l'automate est minimal
+            minimal = automate.est_minimal()
+            if minimal:
+                console.print("L'automate est minimal.", style="bold green")
+            else:
+                console.print("L'automate n'est pas minimal.", style="bold red")
+
+        elif choix in ["19", "test"]:
             # Test de l'automate
             automate.fonction_test()
         else:
@@ -207,3 +238,21 @@ def menu():
         console.print("Erreur : pas d'automate ouvert.", style="bold red")
     else:
         console.print("Option invalide.", style="bold red")
+
+
+def app_sur_tous_les_automate():
+    dossier_programme = os.path.dirname(__file__) + "\\fichier_automate"
+    # Récupérer les fichiers
+    files = [fichier_ for fichier_ in os.listdir(dossier_programme) if
+             fichier_.endswith(".txt") and fichier_.startswith("B05")]
+
+    for file in files:
+        print("___________________________________")
+        print("\n Automate : ", file, "\n")
+        automate = Automate(os.path.join(dossier_programme, file))
+        automate.affichage_automate()
+
+        automate.standardiser()
+
+        automate.minimiser()
+        print("___________________________________")
