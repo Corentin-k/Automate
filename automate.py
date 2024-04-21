@@ -71,7 +71,7 @@ class Automate(AutomateInterface, ABC):
 
             self.transition = {}
             Fichier.readline()
-            while True:
+            while True: # recupere les transitions
                 contenu = Fichier.readline().strip()
                 if not contenu:
                     break
@@ -100,23 +100,23 @@ class Automate(AutomateInterface, ABC):
         return affichage
 
     def affichage_automate(self, titre="Automate"):
-
+        """Affiche l'automate dans un tableau."""
         table = Table(title=titre, show_lines=True)
         table.add_column("[green]Entré[/green]/[red]Sortie[/red]", justify="left", style="cyan")
 
         table.add_column("Etats", justify="center", style="magenta")
+        # Ajouter les colonnes pour chaque lettre du langage
         for lettre in self.langage:
             if lettre != "":
                 table.add_column(lettre, justify="center", style="magenta")
+        # Ajouter les transitions pour chaque état
         for etat in self.etat:
-
             transitions = {}
             for lettre in self.langage:
                 transition = self.transition.get(etat, {}).get(lettre, [])
                 transitions[lettre] = ','.join(str(item) for item in transition) if transition else ""
 
             # Type entre ou sortie
-
             if etat in self.entree:
                 if etat in self.sortie:
                     type_etat = "[green]E[/green]//[red]S[/red]"
@@ -134,7 +134,7 @@ class Automate(AutomateInterface, ABC):
     def est_complet(self, affichage=False):
         for etat in self.etat:
             for lettre in self.langage:
-                if not self.transition.get(etat, {}).get(lettre, []):
+                if not self.transition.get(etat, {}).get(lettre, []): # Regarde si la transition est vide
                     if affichage:
                         console.print(
                             "\n[yellow]L'automate n'est pas complet : Il manque des transitions pour un état et un symbole donné.[/yellow]\n")
@@ -147,15 +147,16 @@ class Automate(AutomateInterface, ABC):
             self.affichage_automate("Automate Complet et Déterministe")
             return
 
-            # Créer une copie de l'automate pour le compléter
+        # Créer une copie de l'automate pour le compléter
         automate_complet = Automate()
         automate_complet.copier_automate(self)
 
-        if not self.est_deterministe():
+        if not self.est_deterministe():  # Si l'automate n'est pas déterministe, on le déterminise
             console.print("[red]Erreur[/red] : L'automate doit être déterministe pour être complété.")
             console.print("L'automate est en cours de déterminisation...")
             automate_complet = automate_complet.determiniser()
 
+        # Ajoute la transition vers l'état poubelle pour chaque état et chaque lettre du langage manquant
         for etat in automate_complet.etat:
             for lettre in automate_complet.langage:
                 if not automate_complet.transition.get(etat, {}).get(lettre, []):
@@ -170,6 +171,7 @@ class Automate(AutomateInterface, ABC):
             }
             for etat, transitions_etat in sorted(automate_complet.transition.items())
         }
+        # Ajouter l'état poubelle comme etat
         automate_complet.transition["p"] = {lettre: ["p"] for lettre in automate_complet.langage}
         automate_complet.complet = True
         automate_complet.etat.append("p")
@@ -178,7 +180,7 @@ class Automate(AutomateInterface, ABC):
         return automate_complet
 
     def est_standard(self):
-        if len(self.entree) >= 2:
+        if len(self.entree) >= 2: # Regarder si il y a plus d'un état d'entrée
             console.print("\n[yellow]L'automate n'est pas standard: Il y a plus d'un état d'entrée.[/yellow]\n")
             return False
         else:
@@ -197,6 +199,7 @@ class Automate(AutomateInterface, ABC):
             return
         automate_standardiser = Automate()
         automate_standardiser.copier_automate(self)
+        # Création du nouvel état initial
         automate_standardiser.etat.append("i")
         # Création des transitions sortantes du nouvel état initial
         transitions_nouvel_etat = {}
@@ -215,7 +218,6 @@ class Automate(AutomateInterface, ABC):
                                                                    doublon])))  # nous mettons en liste afin de pouvoir accéder à l'indexation si besoin / set pour enlever les doublons / sorted pour trier dans l'ordre croissant
 
         # nouvel état initial
-
         automate_standardiser.transition["i"] = transitions_nouvel_etat
 
         # états d'entrée et de sortie
@@ -228,10 +230,10 @@ class Automate(AutomateInterface, ABC):
 
     def est_deterministe(self, affichage=False):
         bool1 = False
-        if not len(self.entree) >= 2:
+        if not len(self.entree) >= 2: # Regarder si il y a plus d'un état d'entrée
             for etat in self.etat:
                 for lettre in self.langage:
-                    if len(self.transition.get(etat, {}).get(lettre, [])) > 1:
+                    if len(self.transition.get(etat, {}).get(lettre, [])) > 1: # Regarder si il y a plus d'une transition possible pour un état et un symbole donné
                         if affichage:
                             console.print(
                                 "\n[yellow]L'automate n'est pas déterministe: Il y a plus d'une transition possible pour un état et un symbole donné.[/yellow]\n")
@@ -243,7 +245,7 @@ class Automate(AutomateInterface, ABC):
         return bool1
 
     def copier_automate(self, autre_automate):
-
+        # Copie les attributs de l'automate passé en paramètre
         self.etat = autre_automate.etat[:]
         self.langage = autre_automate.langage[:]
         self.entree = autre_automate.entree[:]
@@ -264,13 +266,13 @@ class Automate(AutomateInterface, ABC):
         etats_a_traiter = [set(self.entree)]
         etats_traites = set()
         while etats_a_traiter:
-            new_etat = etats_a_traiter.pop(0)
-            etats_traites.add(tuple(new_etat))
+            new_etat = etats_a_traiter.pop(0) # Prendre le premier état de la liste
+            etats_traites.add(tuple(new_etat)) # Ajouter l'état traité à la liste des états traités
 
-            reformat_new_etat = ''.join(sorted(new_etat))
-            deterministe_automate.etat.append(reformat_new_etat)
+            reformat_new_etat = ''.join(sorted(new_etat)) # Reformater l'état en string on reunit les etats
+            deterministe_automate.etat.append(reformat_new_etat) # Ajouter les états à l'automate déterministe
 
-            for symb in self.langage:
+            for symb in self.langage: # Pour chaque lettre du langage de l'automate on regarde les transitions possibles pour chaque état de l'automate
                 etats_atteignable = set()
 
                 for etat in new_etat:
@@ -328,6 +330,105 @@ class Automate(AutomateInterface, ABC):
 
         return self == automate_minimal
 
+    def complementaire(self):
+        """Calcule l'automate complémentaire."""
+
+        automate_complementaire = Automate()
+        automate_complementaire.copier_automate(self)
+        # L'automate complémentaire doit etre deterministe et complet
+        if not automate_complementaire.est_complet():
+            console.print(
+                "\n[yellow]L'automate a besoin d'être complété et determiniser pour obtenir le langage complémentaire.[/yellow]\n")
+            automate_complementaire = automate_complementaire.completer()
+        nouveaux_etats_finaux = []
+        # Ajouter les états qui ne sont pas des états de sortie comme états de sortie
+        for etat in automate_complementaire.etat:
+            if etat not in automate_complementaire.sortie:
+                nouveaux_etats_finaux.append(etat)
+        # Mettre à jour les états de sortie de l'automate complémentaire
+        automate_complementaire.sortie = nouveaux_etats_finaux
+        console.print("[green]\nL'automate complémentaire a été créé avec succès.\n[/green]")
+        automate_complementaire.affichage_automate("Automate complémentaire")
+
+    def mot_accepte(self, mot: str):
+        """Détermine si un mot est accepté par l'automate."""
+        # Initialiser une liste avec l'état d'entrée initial
+        etats_a_explorer = [self.entree]
+
+        # Pour chaque symbole dans le mot
+        for symbole in mot:
+            # Nouvelle liste pour les états à explorer pour le prochain symbole
+            nouveaux_etats = []
+            transitions_possibles = []
+            # Parcourez tous les états actuels dans la liste
+            while etats_a_explorer:
+                # Obtenez l'état courant de la liste
+                etat_courant = etats_a_explorer.pop(0)
+                if isinstance(etat_courant, list) and len(etat_courant) == 1:
+                    etat_courant = etat_courant[0]
+
+                for etat in etat_courant:
+                    transitions_possibles += self.transition.get(etat, {}).get(symbole, [])
+
+                # Ajoutez toutes les transitions possibles à la nouvelle liste d'états
+                for etat_prochain in transitions_possibles:
+                    # Assurez-vous d'ajouter chaque nouvel état à la liste sans duplication
+                    if etat_prochain not in nouveaux_etats:
+                        nouveaux_etats.append(etat_prochain)
+
+            etats_a_explorer = nouveaux_etats
+
+            # Si la liste est vide, cela signifie que le mot n'est pas accepté
+            if not etats_a_explorer:
+                return False
+
+        # Vérifiez si l'un des états courants est un état de sortie de l'automate
+        for etat in etats_a_explorer:
+            if etat in self.sortie:
+                return True
+
+        return False
+
+    def fonction_test(self):
+        type = ""
+        if self.est_standard():
+            print("L'automate est standard")
+            self.standard = True
+            type += "standard "
+
+        if self.est_complet(True):
+            print("L'automate est complet")
+            type += "complet "
+            self.complet = True
+        if self.est_deterministe(True):
+            print("L'automate est deterministe")
+            self.deterministe = True
+            type += "déterministe "
+        if self.est_minimal():
+            print("L'automate est minimal")
+            self.minimal = True
+            type += "minimal "
+
+        self.affichage_automate("Automate " + type)
+
+    def partitioner_bloc(self,automate, bloc):
+        """Partitionne un bloc d'états en sous-blocs en fonction des transitions."""
+        # Utilisez un dictionnaire pour regrouper les états avec des transitions similaires
+        sous_blocs = {}
+
+        # Itérer sur chaque état dans le bloc
+        for etat in bloc:
+            # Créer une clé pour l'état basée sur ses transitions
+            cle = tuple((lettre, automate.transition.get((etat, lettre), None)) for lettre in automate.langage)
+
+            # Ajouter l'état au groupe correspondant
+            if cle not in sous_blocs:
+                sous_blocs[cle] = set()
+            sous_blocs[cle].add(etat)
+
+        # Retourner les sous-blocs résultants
+        return sous_blocs.values()
+
     def minimiser(self):
         automate_minimal = Automate()
         automate_minimal.copier_automate(self)
@@ -341,6 +442,10 @@ class Automate(AutomateInterface, ABC):
 
         automate_copie2 = Automate()
         automate_copie2.copier_automate(automate_minimal)
+
+        automate_copie3 = Automate()
+        automate_copie3.copier_automate(automate_minimal)
+
         # sorted(automate_copie2.transition.values())
         et = []  # Etats terminaux
         ent = []  # Etats non terminaux
@@ -400,7 +505,7 @@ class Automate(AutomateInterface, ABC):
                 motifs_transitions2[motif].append(etat_terminal)
 
         motifs_transitions.update(motifs_transitions2)
-
+        # print(motifs_transitions)
         transitions_avant_fusion = {}
         for etat, transitions in temp.items():
             transitions_avant_fusion[etat] = {}
@@ -412,27 +517,47 @@ class Automate(AutomateInterface, ABC):
                             groupes_destinations.append(motif)
                             break
                 transitions_avant_fusion[etat][symbole] = groupes_destinations
-
+        # print(transitions_avant_fusion)
         # Separer les groupes de motifs
-        groupes_separes = {}
+        # print(automate_modifie)
 
-        for motif, etats_du_groupe in motifs_transitions.items():
-            transitions_du_groupe = {}
-            for etat in etats_du_groupe:
-                transitions_du_groupe[etat] = transitions_avant_fusion[etat]
+        # print(automate_modifie)
+        for etat in automate_copie3.etat:
+            for symbole in automate_modifie.langage:
+                destinations = automate_copie3.transition.get(etat, {}).get(symbole, [])
+                nouvelles_destinations = []
+                for destination in destinations:
+                    for motif, etats in motifs_transitions.items():
+                        if destination in etats:
+                            nouvelles_destinations.append(motif)
+                    automate_copie3.transition[etat][symbole] = nouvelles_destinations
 
-            # print(f"Transitions du groupe de motifs {motif} :", transitions_du_groupe)
+        automate_copie3.affichage_automate()
+        comparaison = True
+        while comparaison:
+            groupes_separes = {}
+            for motif, etats_du_groupe in motifs_transitions.items():
+                transitions_du_groupe = {}
+                for etat in etats_du_groupe:
+                    transitions_du_groupe[etat] = transitions_avant_fusion[etat]
 
-            for etat, transitions_etat in transitions_du_groupe.items():
-                Similaire = False
+                # print(f"Transitions du groupe de motifs {motif} :", transitions_du_groupe)
+                for etat, transitions_etat in transitions_du_groupe.items():
+                    # print(transitions_du_groupe)
+                    Similaire = False
+                    for groupe, transitions_groupe in groupes_separes.items():
+                        if transitions_avant_fusion[transitions_groupe[0]] == transitions_etat:
+                            if groupes_separes[groupe][0] in motifs_transitions[motif]:
+                                groupes_separes[groupe].append(etat)
+                                Similaire = True
+                                break
+                    if not Similaire:
+                        groupes_separes[f"NewGroup{len(groupes_separes) + 1}"] = [etat]
 
-                for groupe, transitions_groupe in groupes_separes.items():
-                    if transitions_avant_fusion[transitions_groupe[0]] == transitions_etat:
-                        groupes_separes[groupe].append(etat)
-                        Similaire = True
-                        break
-                if not Similaire:
-                    groupes_separes[f"NewGroup{len(groupes_separes) + 1}"] = [etat]
+            if motifs_transitions == groupes_separes:
+                comparaison = False
+            else:
+                motifs_transitions = groupes_separes
         # print("Groupes séparés :", groupes_separes)
         # print("Groupes séparés :", groupes_separes)
         # for etat, transitions in temp.items():
@@ -497,7 +622,7 @@ class Automate(AutomateInterface, ABC):
                     if destination_present:
                         # print(f"La destination {destination} est présente dans les {etat_existant}.")
                         automate_copie2.transition[etat][symbole] = [etat_existant]
-
+        # print(automate_copie2.transition)
         for etat, transitions_etat in automate_copie2.transition.items():
             for symbole, destination in transitions_etat.items():
                 if not isinstance(destination, list):
@@ -507,86 +632,5 @@ class Automate(AutomateInterface, ABC):
         automate_copie2.sortie = new_sortie
         console.print("[green]\nL'automate a été minimisé avec succès.\n[/green]")
         automate_copie2.affichage_automate("Automate Minimal (déterministe,complet)")
+
         return automate_copie2
-
-    def complementaire(self):
-        """Calcule l'automate complémentaire."""
-
-        automate_complementaire = Automate()
-        automate_complementaire.copier_automate(self)
-        if not automate_complementaire.est_complet():
-            console.print(
-                "\n[yellow]L'automate a besoin d'être complété et determiniser pour obtenir le langage complémentaire.[/yellow]\n")
-            automate_complementaire = automate_complementaire.completer()
-        nouveaux_etats_finaux = []
-
-        for etat in automate_complementaire.etat:
-            if etat not in automate_complementaire.sortie:
-                nouveaux_etats_finaux.append(etat)
-
-        automate_complementaire.sortie = nouveaux_etats_finaux
-        console.print("[green]\nL'automate complémentaire a été créé avec succès.\n[/green]")
-        automate_complementaire.affichage_automate("Automate complémentaire")
-
-    def mot_accepte(self, mot: str):
-        """Détermine si un mot est accepté par l'automate."""
-        # Initialiser une liste avec l'état d'entrée initial
-        etats_a_explorer = [self.entree]
-
-        # Pour chaque symbole dans le mot
-        for symbole in mot:
-            # Nouvelle liste pour les états à explorer pour le prochain symbole
-            nouveaux_etats = []
-            transitions_possibles = []
-            # Parcourez tous les états actuels dans la liste
-            while etats_a_explorer:
-                # Obtenez l'état courant de la liste
-                etat_courant = etats_a_explorer.pop(0)
-                if isinstance(etat_courant, list) and len(etat_courant) == 1:
-                    etat_courant = etat_courant[0]
-
-                for etat in etat_courant:
-                    transitions_possibles += self.transition.get(etat, {}).get(symbole, [])
-
-                # Ajoutez toutes les transitions possibles à la nouvelle liste d'états
-                for etat_prochain in transitions_possibles:
-                    # Assurez-vous d'ajouter chaque nouvel état à la liste sans duplication
-                    if etat_prochain not in nouveaux_etats:
-                        nouveaux_etats.append(etat_prochain)
-
-            # Mettre à jour la liste des états à explorer avec les nouveaux états
-            etats_a_explorer = nouveaux_etats
-
-            # Si la liste est vide, cela signifie que le mot n'est pas accepté
-            if not etats_a_explorer:
-                return False
-
-        # Vérifiez si l'un des états courants est un état de sortie de l'automate
-        for etat in etats_a_explorer:
-            if etat in self.sortie:
-                return True
-
-        # Si aucun état courant n'est un état de sortie, le mot n'est pas accepté
-        return False
-
-    def fonction_test(self):
-        type = ""
-        if self.est_standard():
-            print("L'automate est standard")
-            self.standard = True
-            type += "standard "
-
-        if self.est_complet(True):
-            print("L'automate est complet")
-            type += "complet "
-            self.complet = True
-        if self.est_deterministe(True):
-            print("L'automate est deterministe")
-            self.deterministe = True
-            type += "déterministe "
-        if self.est_minimal():
-            print("L'automate est minimal")
-            self.minimal = True
-            type += "minimal "
-
-        self.affichage_automate("Automate " + type)
