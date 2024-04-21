@@ -10,7 +10,7 @@ from automate import *
 
 
 """
-Fichier dico.py
+Fichier B05-dico.py
 Ce fichier contient des fonctions pour afficher le code d'une fonction de la classe Automate et pour rechercher un mot
 dans un dictionnaire.
 

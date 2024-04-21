@@ -532,7 +532,6 @@ class Automate(AutomateInterface, ABC):
                             nouvelles_destinations.append(motif)
                     automate_copie3.transition[etat][symbole] = nouvelles_destinations
 
-        automate_copie3.affichage_automate()
         comparaison = True
         while comparaison:
             groupes_separes = {}
