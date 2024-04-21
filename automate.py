@@ -138,28 +138,19 @@ class Automate(AutomateInterface, ABC):
         return True
 
     def completer(self):
-        if self.complet:
-            console.print("[red]Erreur[/red] L'automate est déjà complet.\n")
-            self.affichage_automate("Automate Complet et Déterministe")
-            return
-
         if self.est_complet():
             console.print("[red]Erreur[/red] L'automate est déjà complet.")
+            self.affichage_automate("Automate Complet et Déterministe")
             return
 
             # Créer une copie de l'automate pour le compléter
         automate_complet = Automate()
         automate_complet.copier_automate(self)
 
-        if not self.deterministe or not self.est_deterministe():
+        if not self.est_deterministe():
             console.print("[red]Erreur[/red] : L'automate doit être déterministe pour être complété.")
-            print("Voulez-vous déterminiser l'automate ?")
-            choix = input(">>>")
-            if choix in ["oui", "o", "yes", "y"]:
-                automate_complet = automate_complet.determiniser()
-            else:
-                console.print("[red]Erreur[/red] : L'automate doit être non déterministe pour être complété.")
-                return
+            console.print("L'automate est en cours de déterminisation...")
+            automate_complet = automate_complet.determiniser()
 
         for etat in automate_complet.etat:
             for lettre in automate_complet.langage:
@@ -173,6 +164,7 @@ class Automate(AutomateInterface, ABC):
         console.print("[green]\nL'automate a été complété avec succès.\n[/green]")
         automate_complet.affichage_automate("Automate Complet et Déterministe")
         return automate_complet
+
 
     def est_standard(self):
         if len(self.entree) >= 2:
@@ -189,7 +181,7 @@ class Automate(AutomateInterface, ABC):
             return True
 
     def standardiser(self):
-        if self.standard or self.est_standard():
+        if self.est_standard():
             console.print("[green]Déjà standard[/green]")
             return
         automate_standardiser = Automate()
@@ -246,7 +238,7 @@ class Automate(AutomateInterface, ABC):
         self.minimal = autre_automate.minimal
 
     def determiniser(self):
-        if self.deterministe or self.est_deterministe():
+        if self.est_deterministe():
             console.print("[red]Erreur[/red] : L'automate est déjà déterministe.")
             return
         deterministe_automate = Automate()
@@ -308,6 +300,7 @@ class Automate(AutomateInterface, ABC):
         print("L'automate a été déterminisé avec succès.")
         deterministe_automate.affichage_automate("Automate Déterminisé")
         return deterministe_automate
+
 
     def est_minimal(self):
         """Minimise l'automate si nécessaire."""
