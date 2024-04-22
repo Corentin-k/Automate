@@ -249,7 +249,13 @@ class Automate(AutomateInterface, ABC):
         self.langage = autre_automate.langage[:]
         self.entree = autre_automate.entree[:]
         self.sortie = autre_automate.sortie[:]
-        self.transition = dict(autre_automate.transition)
+        self.transition = {
+            etat: {
+                lettre: list(transitions)
+                for lettre, transitions in transitions_etat.items()
+            }
+            for etat, transitions_etat in autre_automate.transition.items()
+        }
         self.complet = autre_automate.complet
         self.standard = autre_automate.standard
         self.deterministe = autre_automate.deterministe
