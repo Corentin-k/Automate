@@ -1,4 +1,4 @@
-# Projet d'Automate finis et expressions relationnelles
+# Projet d'Automates finis et expressions relationnelles
 
 ## Contributeurs
 - [Corentin KERVAGORET](https://github.com/Corentin-k)
@@ -38,7 +38,7 @@ Voir toutes les fonctionnalités dans le wiki du projet [ici](https://github.com
 - Il permet de gérer des automates depuis un fichier texte
 
 > [!IMPORTANT]
-> Attention pour pouvoir lire les automates il faut les stocker comme suit dans un fichier.txt dans un repertoire "automates" à la racine du projet :
+> Attention pour pouvoir lire les automates il faut les stocker comme suit dans un fichier.txt dans un repertoire "fichier-automates" à la racine du projet :
 
 ```txt
 # Exemple d'automate
