@@ -2,10 +2,10 @@
 
 ## Contributeurs
 - [Corentin KERVAGORET](https://github.com/Corentin-k)
-- Henri Su
-- Gabriel TANNOUS
-- Vidjay VELAYOUDAM
-- Hippolyte Vallata
+- [Henri Su](https://github.com/Sl0th22)
+- [Gabriel TANNOUS](https://github.com/Gabibel)
+- [Vidjay VELAYOUDAM](https://github.com/vjvld)
+- [Hippolyte Vallata](https://github.com/LowenskyGuelce)
 
 ## Informations
 - Projet réalisé dans le cadre de l'UE "Automates et expressions relationnelles" au semestre 4 de la L2 à L'EFREI Paris.
