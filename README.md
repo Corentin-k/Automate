@@ -1,11 +1,11 @@
-# Projet d'Automate finis et expressions relationnelles
+# Projet d'Automates finis et expressions relationnelles
 
 ## Contributeurs
 - [Corentin KERVAGORET](https://github.com/Corentin-k)
-- Henri Su
-- Gabriel TANNOUS
-- Vidjay VELAYOUDAM
-- Hippolyte Vallata
+- [Henri Su](https://github.com/Sl0th22)
+- [Gabriel TANNOUS](https://github.com/Gabibel)
+- [Vidjay VELAYOUDAM](https://github.com/vjvld)
+- [Hippolyte Vallata](https://github.com/LowenskyGuelce)
 
 ## Informations
 - Projet réalisé dans le cadre de l'UE "Automates et expressions relationnelles" au semestre 4 de la L2 à L'EFREI Paris.
@@ -38,7 +38,7 @@ Voir toutes les fonctionnalités dans le wiki du projet [ici](https://github.com
 - Il permet de gérer des automates depuis un fichier texte
 
 > [!IMPORTANT]
-> Attention pour pouvoir lire les automates il faut les stocker comme suit dans un fichier.txt dans un repertoire "automates" à la racine du projet :
+> Attention pour pouvoir lire les automates il faut les stocker comme suit dans un fichier.txt dans un repertoire "fichier-automates" à la racine du projet :
 
 ```txt
 # Exemple d'automate
