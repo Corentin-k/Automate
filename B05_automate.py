@@ -127,7 +127,6 @@ class Automate(AutomateInterface, ABC):
                 type_etat = ""
 
             table.add_row(type_etat, etat, *transitions.values())
-
         console.print(table)
 
     def est_complet(self, affichage=False):
@@ -222,6 +221,10 @@ class Automate(AutomateInterface, ABC):
         # états d'entrée et de sortie
         automate_standardiser.entree = ["i"]
         automate_standardiser.sortie = list(set(self.sortie))  # Enlever les doublons dans la sortie
+
+        for i in self.etat:
+            if i in self.etat and i in self.sortie:
+                automate_standardiser.sortie.append("i")
         console.print("[green]\nL'automate a été standardisé avec succès.\n[/green]")
         automate_standardiser.affichage_automate("Automate Standardisé")
         self.standard = True
@@ -360,14 +363,13 @@ class Automate(AutomateInterface, ABC):
         # Initialiser une liste avec l'état d'entrée initial
         etats_a_explorer = [self.entree]
 
-        # Pour chaque symbole dans le mot
         for symbole in mot:
             # Nouvelle liste pour les états à explorer pour le prochain symbole
             nouveaux_etats = []
             transitions_possibles = []
-            # Parcourez tous les états actuels dans la liste
+            # Parcours tous les états actuels dans la liste
             while etats_a_explorer:
-                # Obtenez l'état courant de la liste
+                # prendre l'état courant de la liste
                 etat_courant = etats_a_explorer.pop(0)
                 if isinstance(etat_courant, list) and len(etat_courant) == 1:
                     etat_courant = etat_courant[0]
@@ -377,7 +379,7 @@ class Automate(AutomateInterface, ABC):
 
                 # Ajoutez toutes les transitions possibles à la nouvelle liste d'états
                 for etat_prochain in transitions_possibles:
-                    # Assurez-vous d'ajouter chaque nouvel état à la liste sans duplication
+                    # ajouter chaque nouvel état à la liste
                     if etat_prochain not in nouveaux_etats:
                         nouveaux_etats.append(etat_prochain)
 
@@ -387,7 +389,7 @@ class Automate(AutomateInterface, ABC):
             if not etats_a_explorer:
                 return False
 
-        # Vérifiez si l'un des états courants est un état de sortie de l'automate
+        #  si l'un des états courants est un état de sortie de l'automate. It's goood.
         for etat in etats_a_explorer:
             if etat in self.sortie:
                 return True
@@ -415,24 +417,6 @@ class Automate(AutomateInterface, ABC):
             type += "minimal "
 
         self.affichage_automate("Automate " + type)
-
-    def partitioner_bloc(self,automate, bloc):
-        """Partitionne un bloc d'états en sous-blocs en fonction des transitions."""
-        # Utilisez un dictionnaire pour regrouper les états avec des transitions similaires
-        sous_blocs = {}
-
-        # Itérer sur chaque état dans le bloc
-        for etat in bloc:
-            # Créer une clé pour l'état basée sur ses transitions
-            cle = tuple((lettre, automate.transition.get((etat, lettre), None)) for lettre in automate.langage)
-
-            # Ajouter l'état au groupe correspondant
-            if cle not in sous_blocs:
-                sous_blocs[cle] = set()
-            sous_blocs[cle].add(etat)
-
-        # Retourner les sous-blocs résultants
-        return sous_blocs.values()
 
     def minimiser(self):
         automate_minimal = Automate()
